@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class MenuScreen extends ApplicationAdapter implements Screen {
 
@@ -52,7 +53,7 @@ public class MenuScreen extends ApplicationAdapter implements Screen {
 		
 		sleep(300);
 		
-		if(GameScreen.prefs.getString("sound_option").equals("on")){
+		if(PlayerData.prefs.getString("sound_option").equals("on")){
 			soundOn = true;
 			soundOff = false;
 		}
@@ -61,8 +62,8 @@ public class MenuScreen extends ApplicationAdapter implements Screen {
 			soundOff = true;
 		}
 
-		if (!GameScreen.prefs.contains("currency")) {
-			GameScreen.prefs.putInteger("currency", 0);
+		if (!PlayerData.prefs.contains("currency")) {
+			PlayerData.prefs.putInteger("currency", 0);
 		}
 
 		currency = getCurrency();
@@ -156,12 +157,12 @@ public class MenuScreen extends ApplicationAdapter implements Screen {
 
 	public static void setCurrency(int val) {
 		int current = getCurrency();
-		GameScreen.prefs.putInteger("currency", (current + val));
-		GameScreen.prefs.flush();
+		PlayerData.prefs.putInteger("currency", (current + val));
+		PlayerData.prefs.flush();
 	}
 
 	public static int getCurrency() {
-		return GameScreen.prefs.getInteger("currency");
+		return PlayerData.prefs.getInteger("currency");
 	}
 
 	@Override

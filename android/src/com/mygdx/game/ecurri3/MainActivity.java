@@ -40,26 +40,26 @@ public class MainActivity extends AndroidApplication {
 		// Create the libgdx View
 		View gameView = initializeForView(new MyGame(), cfg);
 
-		// Create and setup the AdMob view
-		AdView adView = createAdView(); // Put in your secret key here
-		AdRequest adRequest = new AdRequest.Builder().build();
-		adView.loadAd(adRequest);
+//		// Create and setup the AdMob view
+//		AdView adView = createAdView(); // Put in your secret key here
+//		AdRequest adRequest = new AdRequest.Builder().build();
+//		adView.loadAd(adRequest);
 
 		// Add the libgdx view
 		layout.addView(gameView);
 
-		// Add the AdMob view
-		RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(
-				RelativeLayout.LayoutParams.WRAP_CONTENT,
-				RelativeLayout.LayoutParams.WRAP_CONTENT);
-		adParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-		adParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-
-		layout.addView(adView, adParams);
-
-		// Hook it all up
+//		// Add the AdMob view
+//		RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(
+//				RelativeLayout.LayoutParams.WRAP_CONTENT,
+//				RelativeLayout.LayoutParams.WRAP_CONTENT);
+//		adParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+//		adParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+//
+//		layout.addView(adView, adParams);
+//
+//		// Hook it all up
 		setContentView(layout);
-		startAdvertising(adView);
+//		startAdvertising(adView);
 	}
 
 	private AdView createAdView() {

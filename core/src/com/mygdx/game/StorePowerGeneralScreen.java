@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class StorePowerGeneralScreen extends ApplicationAdapter implements Screen{
 	
@@ -64,8 +65,8 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 	@Override
 	public void show() {
 		
-		if (!GameScreen.prefs.contains("currency")) {
-			GameScreen.prefs.putInteger("currency", 0);
+		if (!PlayerData.prefs.contains("currency")) {
+			PlayerData.prefs.putInteger("currency", 0);
 		}
 
 		currency = getCurrency();
@@ -238,7 +239,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 450 && touch.y <= 550)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpExtra") >= 1) {
+						if (PlayerData.prefs.getInteger("genUpExtra") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -260,7 +261,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 565 && touch.y <= 665)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpExtra") >= 2) {
+						if (PlayerData.prefs.getInteger("genUpExtra") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -281,7 +282,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 680 && touch.y <= 780)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpExtra") >= 3) {
+						if (PlayerData.prefs.getInteger("genUpExtra") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "genUpExtra")){
@@ -301,7 +302,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 795 && touch.y <= 895)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpExtra") >= 4) {
+						if (PlayerData.prefs.getInteger("genUpExtra") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -322,7 +323,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 910 && touch.y <= 1010)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpExtra") >= 5) {
+						if (PlayerData.prefs.getInteger("genUpExtra") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -343,7 +344,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 450 && touch.y <= 550)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpDur") >= 1) {
+						if (PlayerData.prefs.getInteger("genUpDur") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -365,7 +366,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 565 && touch.y <= 665)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpDur") >= 2) {
+						if (PlayerData.prefs.getInteger("genUpDur") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -386,7 +387,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 680 && touch.y <= 780)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpDur") >= 3) {
+						if (PlayerData.prefs.getInteger("genUpDur") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "genUpDur")){
@@ -406,7 +407,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 795 && touch.y <= 895)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpDur") >= 4) {
+						if (PlayerData.prefs.getInteger("genUpDur") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -427,7 +428,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 910 && touch.y <= 1010)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("genUpDur") >= 5) {
+						if (PlayerData.prefs.getInteger("genUpDur") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -472,17 +473,17 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 	public static void setCurrency(int val) {
 		
 		int current = getCurrency();
-		GameScreen.prefs.putInteger("currency", (current + val));
-		GameScreen.prefs.flush();
+		PlayerData.prefs.putInteger("currency", (current + val));
+		PlayerData.prefs.flush();
 	}
 
 	public static int getCurrency() {
-		return GameScreen.prefs.getInteger("currency");
+		return PlayerData.prefs.getInteger("currency");
 	}
 
 	public void checkPurchases() {
 
-		switch(GameScreen.prefs.getInteger("genUpExtra")) {
+		switch(PlayerData.prefs.getInteger("genUpExtra")) {
 		case 1:
 			batch.draw(purchased.image, 340, 450);
 			break;
@@ -509,7 +510,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 			batch.draw(purchased.image, 340, 910);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("genUpDur")) {
+		switch(PlayerData.prefs.getInteger("genUpDur")) {
 		case 1:
 			batch.draw(purchased.image, 1130, 450);
 			break;
@@ -548,7 +549,7 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 	
 	public boolean havePreReq(int level, String pref){
 		
-		int levelOwned = GameScreen.prefs.getInteger(pref);
+		int levelOwned = PlayerData.prefs.getInteger(pref);
 		int levelReq = level - 1;
 		
 		if(level == 1)
@@ -562,14 +563,14 @@ public class StorePowerGeneralScreen extends ApplicationAdapter implements Scree
 	
 	public void purchaseHealth(int genUpDur, int cost){
 		
-		GameScreen.prefs.putInteger("genUpDur", genUpDur);
+		PlayerData.prefs.putInteger("genUpDur", genUpDur);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseRegen(int genUpExtra, int cost){
 		
-		GameScreen.prefs.putInteger("genUpExtra", genUpExtra);
+		PlayerData.prefs.putInteger("genUpExtra", genUpExtra);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}

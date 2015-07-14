@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class StorePowerShotgunScreen extends ApplicationAdapter implements Screen{
 	
@@ -73,7 +74,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 	@Override
 	public void show() {
 		
-		if(GameScreen.prefs.getString("sound_option").equals("on")){
+		if(PlayerData.prefs.getString("sound_option").equals("on")){
 			soundOn = true;
 			soundOff = false;
 		}
@@ -82,8 +83,8 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 			soundOff = true;
 		}
 		
-		if (!GameScreen.prefs.contains("currency")) {
-			GameScreen.prefs.putInteger("currency", 0);
+		if (!PlayerData.prefs.contains("currency")) {
+			PlayerData.prefs.putInteger("currency", 0);
 		}
 
 		currency = getCurrency();
@@ -294,7 +295,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpDur") >= 1) {
+						if (PlayerData.prefs.getInteger("shotgunUpDur") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -317,7 +318,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpDur") >= 2) {
+						if (PlayerData.prefs.getInteger("shotgunUpDur") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -339,7 +340,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpDur") >= 3) {
+						if (PlayerData.prefs.getInteger("shotgunUpDur") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "shotgunUpDur")){
@@ -360,7 +361,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpDur") >= 4) {
+						if (PlayerData.prefs.getInteger("shotgunUpDur") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -382,7 +383,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpDur") >= 5) {
+						if (PlayerData.prefs.getInteger("shotgunUpDur") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -404,7 +405,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpPierce") >= 1) {
+						if (PlayerData.prefs.getInteger("shotgunUpPierce") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -427,7 +428,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpPierce") >= 2) {
+						if (PlayerData.prefs.getInteger("shotgunUpPierce") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -449,7 +450,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpPierce") >= 3) {
+						if (PlayerData.prefs.getInteger("shotgunUpPierce") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "shotgunUpPierce")){
@@ -470,7 +471,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpPierce") >= 4) {
+						if (PlayerData.prefs.getInteger("shotgunUpPierce") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -492,7 +493,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpPierce") >= 5) {
+						if (PlayerData.prefs.getInteger("shotgunUpPierce") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -514,7 +515,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpLandmine") >= 1) {
+						if (PlayerData.prefs.getInteger("shotgunUpLandmine") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -537,7 +538,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpLandmine") >= 2) {
+						if (PlayerData.prefs.getInteger("shotgunUpLandmine") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -559,7 +560,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpLandmine") >= 3) {
+						if (PlayerData.prefs.getInteger("shotgunUpLandmine") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3000, "shotgunUpLandmine")){
@@ -580,7 +581,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpLandmine") >= 4) {
+						if (PlayerData.prefs.getInteger("shotgunUpLandmine") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -602,7 +603,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("shotgunUpLandmine") >= 5) {
+						if (PlayerData.prefs.getInteger("shotgunUpLandmine") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -638,7 +639,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 	
 	public void checkPurchases() {
 
-		switch(GameScreen.prefs.getInteger("shotgunUpDur")) {
+		switch(PlayerData.prefs.getInteger("shotgunUpDur")) {
 		case 1:
 			batch.draw(purchased.image, 142, 480);
 			break;
@@ -665,7 +666,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 			batch.draw(purchased.image, 142, 944);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("shotgunUpPierce")) {
+		switch(PlayerData.prefs.getInteger("shotgunUpPierce")) {
 		case 1:
 			batch.draw(purchased.image, 734, 480);
 			break;
@@ -692,7 +693,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 			batch.draw(purchased.image, 734, 944);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("shotgunUpLandmine")) {
+		switch(PlayerData.prefs.getInteger("shotgunUpLandmine")) {
 		case 1:
 			batch.draw(purchased.image, 1326, 480);
 			break;
@@ -749,12 +750,12 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 	public static void setCurrency(int val) {
 		
 		int current = getCurrency();
-		GameScreen.prefs.putInteger("currency", (current + val));
-		GameScreen.prefs.flush();
+		PlayerData.prefs.putInteger("currency", (current + val));
+		PlayerData.prefs.flush();
 	}
 
 	public static int getCurrency() {
-		return GameScreen.prefs.getInteger("currency");
+		return PlayerData.prefs.getInteger("currency");
 	}
 	
 	public boolean canAfford(int cost) {
@@ -767,7 +768,7 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 	
 	public boolean havePreReq(int level, String pref){
 		
-		int levelOwned = GameScreen.prefs.getInteger(pref);
+		int levelOwned = PlayerData.prefs.getInteger(pref);
 		int levelReq = level - 1;
 		
 		if(level == 1)
@@ -781,21 +782,21 @@ public class StorePowerShotgunScreen extends ApplicationAdapter implements Scree
 	
 	public void purchaseAmount(int shotgunUpPierce, int cost) {
 
-		GameScreen.prefs.putInteger("shotgunUpPierce", shotgunUpPierce);
+		PlayerData.prefs.putInteger("shotgunUpPierce", shotgunUpPierce);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseDur(int shotgunUpDur, int cost) {
 
-		GameScreen.prefs.putInteger("shotgunUpDur", shotgunUpDur);
+		PlayerData.prefs.putInteger("shotgunUpDur", shotgunUpDur);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseMirror(int shotgunUpLandmine, int cost) {
 
-		GameScreen.prefs.putInteger("shotgunUpLandmine", shotgunUpLandmine);
+		PlayerData.prefs.putInteger("shotgunUpLandmine", shotgunUpLandmine);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}

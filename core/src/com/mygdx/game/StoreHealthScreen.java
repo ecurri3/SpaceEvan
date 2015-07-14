@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 	
@@ -64,8 +65,8 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 	@Override
 	public void show() {
 		
-		if (!GameScreen.prefs.contains("currency")) {
-			GameScreen.prefs.putInteger("currency", 0);
+		if (!PlayerData.prefs.contains("currency")) {
+			PlayerData.prefs.putInteger("currency", 0);
 		}
 
 		currency = getCurrency();
@@ -238,7 +239,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 450 && touch.y <= 550)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpRegen") >= 1) {
+						if (PlayerData.prefs.getInteger("hUpRegen") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -260,7 +261,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 565 && touch.y <= 665)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpRegen") >= 2) {
+						if (PlayerData.prefs.getInteger("hUpRegen") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -281,7 +282,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 680 && touch.y <= 780)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpRegen") >= 3) {
+						if (PlayerData.prefs.getInteger("hUpRegen") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "hUpRegen")){
@@ -301,7 +302,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 795 && touch.y <= 895)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpRegen") >= 4) {
+						if (PlayerData.prefs.getInteger("hUpRegen") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -322,7 +323,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 910 && touch.y <= 1010)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpRegen") >= 5) {
+						if (PlayerData.prefs.getInteger("hUpRegen") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -343,7 +344,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 450 && touch.y <= 550)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpHealth") >= 1) {
+						if (PlayerData.prefs.getInteger("hUpHealth") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -365,7 +366,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 565 && touch.y <= 665)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpHealth") >= 2) {
+						if (PlayerData.prefs.getInteger("hUpHealth") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -386,7 +387,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 680 && touch.y <= 780)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpHealth") >= 3) {
+						if (PlayerData.prefs.getInteger("hUpHealth") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "hUpHealth")){
@@ -406,7 +407,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 795 && touch.y <= 895)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpHealth") >= 4) {
+						if (PlayerData.prefs.getInteger("hUpHealth") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -427,7 +428,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 910 && touch.y <= 1010)) {
 						sleep(200);
-						if (GameScreen.prefs.getInteger("hUpHealth") >= 5) {
+						if (PlayerData.prefs.getInteger("hUpHealth") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -472,17 +473,17 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 	public static void setCurrency(int val) {
 		
 		int current = getCurrency();
-		GameScreen.prefs.putInteger("currency", (current + val));
-		GameScreen.prefs.flush();
+		PlayerData.prefs.putInteger("currency", (current + val));
+		PlayerData.prefs.flush();
 	}
 
 	public static int getCurrency() {
-		return GameScreen.prefs.getInteger("currency");
+		return PlayerData.prefs.getInteger("currency");
 	}
 
 	public void checkPurchases() {
 
-		switch(GameScreen.prefs.getInteger("hUpRegen")) {
+		switch(PlayerData.prefs.getInteger("hUpRegen")) {
 		case 1:
 			batch.draw(purchased.image, 340, 450);
 			break;
@@ -509,7 +510,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 			batch.draw(purchased.image, 340, 910);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("hUpHealth")) {
+		switch(PlayerData.prefs.getInteger("hUpHealth")) {
 		case 1:
 			batch.draw(purchased.image, 1130, 450);
 			break;
@@ -548,7 +549,7 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 	
 	public boolean havePreReq(int level, String pref){
 		
-		int levelOwned = GameScreen.prefs.getInteger(pref);
+		int levelOwned = PlayerData.prefs.getInteger(pref);
 		int levelReq = level - 1;
 		
 		if(level == 1)
@@ -562,14 +563,14 @@ public class StoreHealthScreen extends ApplicationAdapter implements Screen {
 	
 	public void purchaseHealth(int hUpHealth, int cost){
 		
-		GameScreen.prefs.putInteger("hUpHealth", hUpHealth);
+		PlayerData.prefs.putInteger("hUpHealth", hUpHealth);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseRegen(int hUpRegen, int cost){
 		
-		GameScreen.prefs.putInteger("hUpRegen", hUpRegen);
+		PlayerData.prefs.putInteger("hUpRegen", hUpRegen);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}

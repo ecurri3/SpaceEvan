@@ -12,19 +12,30 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.mygdx.gameData.*;
 
 public class GameScreen implements Screen {
 
-	// Game preferences, used to save options, currency, upgrades owned, and so
-	// on
-	public static Preferences prefs;
+	GameData gameData;
+	GameTimers gameTimers;
+	PlayerData playerData;
 
 	// Used when in tilt mode, computes the accelerometer y position to
 	// determine player movement
@@ -47,82 +58,21 @@ public class GameScreen implements Screen {
 	OrthographicCamera camera;
 	SpriteBatch batch;
 	Vector3 touch;
+	
+	//EXPERIMENTAL
+	private Stage stage;
+	private TextureAtlas buttonsAtlas; //** image of buttons **//
+    private Skin buttonSkin; //** images are used as skins of the button **//
+	private TextButton button; //** the button - the only actor in program **//
+	boolean fireButton = false;
 
 	float stateTime;
 
 	Random rand;
 
-	// Used for easier calculations when determining timing of certain powerups,
-	// reloads, etc
-	int nano = 10000000;
-
 	// Base enemy spawn rate
 	int enemySpawnRate;
-
-	// Determines if an explosion animation is being played.
-	// Set to true when an enemy is destroyed by the player
-	boolean explosionBool = false;
-
-	/*
-	 * Store Upgrade Boolean Variables
-	 */
-	boolean healthRegen = false;
-	boolean autoShot = false;
-	boolean mirror = false;
-	boolean mirrorTwins = false;
-	boolean ricochet = false;
-	boolean multi_extra = false;
-
-	int healthRegenTime = 2000;
-	long healthRegen_start;
-	long healthRegen_end;
-	long healthRegen_dur = (healthRegen_end - healthRegen_start);
-
-	// Base reload duration, half a second
-	double reloadDur = 50;
-
-	// Base reload duration for auto fire upgrade, half a second
-	double reloadDur_auto = 50;
-
-	// Auto shot upgrade under the Missiles Store section
-	int autoShotTime = 500;
-
-	// base Rapid Fire power up duration, 15 seconds
-	int rapidFireDuration = 1500;
-	// base Rapid Fire reload duration, one tenth of a second
-	double rapidFireDur = 10;
-
-	// base Multi Shot power up duration, 22.5 seconds
-	int multiShotDuration = 2250;
-
-	// base Shotgun power up duration, 12.5 seconds
-	int shotgunDuration = 1250;
-
-	// mirror chance is the chance to spawn Mirror Image
-	int mirrorChance = 0;
-
-	// ricochet chance is the chance to spawn a ricochet explosion
-	int ricochetChance = 0;
-
-	// multi shot extra missiles upgrade
-	int multi_extra_missiles = 3;
-
-	// shotgun piercing upgrade
-	boolean shotgun_pierce = false;
-	int shotgun_pierce_chance = 0;
-
-	// shotgun landmine upgrade
-	boolean landmine = false;
-	int landmineChance = 0;
-	
-	//powerup spawn timer
-	int powerup_spawn_timer = 1000;
-	
-	//powerup extra spawn
-	boolean extra_powerup = false;
-	int extra_powerup_chance = 0;
-
-	int player_health = 5;
+	int collisionCounter = 0;
 
 	/*
 	 * Static variables shared between game over screen and the game screen
@@ -145,7 +95,7 @@ public class GameScreen implements Screen {
 	 */
 	Player player;
 	Missile missile;
-	Background background;
+	UserInterface userInterface;
 	AnimatedBackground anim_background;
 	Health health;
 	ExtraHealth extrahealth;
@@ -162,10 +112,6 @@ public class GameScreen implements Screen {
 	// Determines whether the game is paused or active
 	boolean paused;
 
-	// Keeps track of the reload
-	boolean recentlyFired = false;
-	boolean recentlyFired_auto = false;
-
 	// Keeps track of which way the player is currently accelerating
 	boolean accelLeft;
 	boolean accelRight;
@@ -177,77 +123,6 @@ public class GameScreen implements Screen {
 	boolean control_button;
 	boolean sound_on;
 	boolean sound_off;
-
-	/*
-	 * Power-Up Booleans
-	 */
-	boolean rapidFire = false;
-	boolean shotgun = false;
-	boolean multiShot = false;
-	boolean autoFire = false;
-	boolean swiftnessPower = false;
-	boolean bigAmmo = false;
-
-	// Keeps track of the time the game started and ended
-	long gameStart;
-
-	// Auto Shot timer
-	long autoShotStart;
-	long autoShotEnd;
-	long autoShotDur = (autoShotEnd - autoShotStart);
-
-	// Rapid Fire timer
-	long rapidFire_start;
-	long rapidFire_end;
-	long rapidFire_dur = (rapidFire_end - rapidFire_start);
-
-	// Shotgun timer
-	long shotgun_start;
-	long shotgun_end;
-	long shotgun_dur = (shotgun_end - shotgun_start);
-
-	// Multi Shot timer
-	long multiShot_start;
-	long multiShot_end;
-	long multiShot_dur = (multiShot_end - multiShot_start);
-
-	// Auto Fire timer
-	long autoFire_start;
-	long autoFire_end;
-	long autoFire_dur = (autoFire_end - autoFire_start);
-
-	// Swiftness timer
-	long swiftnessPower_start;
-	long swiftnessPower_end;
-	long swiftnessPower_dur = (swiftnessPower_end - swiftnessPower_start);
-
-	// Big Ammo timer
-	long bigAmmo_start;
-	long bigAmmo_end;
-	long bigAmmo_dur = (bigAmmo_end - bigAmmo_start);
-
-	// Reload timer
-	long startTime;
-	long endTime;
-	long duration = (endTime - startTime);
-
-	// Reload auto shot timer
-	long startTime_auto;
-	long endTime_auto;
-	long duration_auto = (endTime_auto - startTime_auto);
-
-	// Enemy spawn timer
-	long enemyStart;
-	long enemyEnd;
-	long enemyDur = (enemyEnd - enemyStart);
-
-	// Power Up spawn timer
-	long powerStart = System.nanoTime() / nano;
-	long powerEnd;
-	long powerDur = (powerEnd - powerStart);
-
-	// pause duration
-	long pauseTime;
 
 	/*
 	 * Arrays to keep track of individual enemies, missiles, and so on
@@ -305,448 +180,64 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void show() {
-		
+
+		gameData = new GameData();
+		gameTimers = new GameTimers();
+		playerData = new PlayerData(gameData, gameTimers);
+
 		anim_background = new AnimatedBackground();
 
-		/*
-		 * Begin timers
-		 */
-		gameStart = System.nanoTime() / nano;
-		enemyStart = System.nanoTime() / nano;
-		powerStart = System.nanoTime() / nano;
-		autoShotStart = System.nanoTime() / nano;
-		healthRegen_start = System.nanoTime() / nano;
 		score = 0;
 		newHighScore = false;
 
-		// Load current preferences
-		prefs = Gdx.app.getPreferences("SpaceGame");
-
-		/*
-		 * Check if preferences are yet initialized Used if it is the very first
-		 * time starting a game
-		 */
-		if (!prefs.contains("currency"))
-			prefs.putInteger("currency", 0);
-
-		if (!prefs.contains("highScore"))
-			prefs.putInteger("highScore", 0);
-
-		// OPTIONS
-		if (!prefs.contains("sound_option"))
-			prefs.putString("sound_option", "on");
-
-		if (!prefs.contains("control_option"))
-			prefs.putString("control_option", "tilt");
-
-		// MISSILES
-		if (!prefs.contains("mUpReload"))
-			prefs.putInteger("mUpReload", 0);
-
-		if (!prefs.contains("mUpAuto"))
-			prefs.putInteger("mUpAuto", 0);
-
-		// HEALTH
-		if (!prefs.contains("hUpRegen"))
-			prefs.putInteger("hUpRegen", 0);
-
-		if (!prefs.contains("hUpHealth"))
-			prefs.putInteger("hUpHealth", 0);
-
-		// RAPID FIRE
-		if (!prefs.contains("rapidUpDur"))
-			prefs.putInteger("rapidUpDur", 0);
-
-		if (!prefs.contains("rapidUpReload"))
-			prefs.putInteger("rapidUpReload", 0);
-
-		if (!prefs.contains("rapidUpReload"))
-			prefs.putInteger("rapidUpReload", 0);
-
-		// MULTI SHOT
-		if (!prefs.contains("multiUpDur"))
-			prefs.putInteger("multiUpDur", 0);
-
-		if (!prefs.contains("multiUpAmount"))
-			prefs.putInteger("multiUpAmount", 0);
-
-		if (!prefs.contains("multiUpMirror"))
-			prefs.putInteger("multiUpMirror", 0);
-
-		// SHOTGUN
-		if (!prefs.contains("shotgunUpDur"))
-			prefs.putInteger("shotgunUpDur", 0);
-
-		if (!prefs.contains("shotgunUpPierce"))
-			prefs.putInteger("shotgunUpPierce", 0);
-
-		if (!prefs.contains("shotgunUpLandmine"))
-			prefs.putInteger("shotgunUpLandmine", 0);
-
-		// GENERAL
-		if (!prefs.contains("generalUpDur"))
-			prefs.putInteger("generalUpDur", 0);
-
-		if (!prefs.contains("generalUpExtra"))
-			prefs.putInteger("generalUpExtra", 0);
-
-		// Save
-		prefs.flush();
-
 		// Control Scheme Options
-		if (prefs.getString("control_option").equals("tilt")) {
+		if (PlayerData.prefs.getString("control_option").equals("tilt")) {
 			control_tilt = true;
 			control_button = false;
-			background = new Background(Assets.sprite_back);
+			userInterface = new UserInterface(Assets.sprite_back);
 		} else {
 			control_tilt = false;
 			control_button = true;
-			background = new Background(Assets.sprite_control_button_back);
+			userInterface = new UserInterface(Assets.sprite_control_button_back);
 		}
 
 		// Load current high score
 		highScore = getHighScore();
 		yourHighScore = "" + highScore;
 
-		// Reload Upgrade
-		switch (prefs.getInteger("mUpReload")) {
-		case 1:
-			reloadDur = 47.5;
-			break;
-		case 2:
-			reloadDur = 45;
-			break;
-		case 3:
-			reloadDur = 42.5;
-			break;
-		case 4:
-			reloadDur = 39;
-			break;
-		case 5:
-			reloadDur = 35;
-			break;
-		}
-
-		// Auto Shot Upgrade
-		switch (prefs.getInteger("mUpAuto")) {
-		case 1:
-			autoShot = true;
-			autoShotTime = 500;
-			break;
-		case 2:
-			autoShot = true;
-			autoShotTime = 400;
-			break;
-		case 3:
-			autoShot = true;
-			autoShotTime = 300;
-			break;
-		case 4:
-			autoShot = true;
-			autoShotTime = 200;
-			break;
-		case 5:
-			autoShot = true;
-			autoShotTime = 100;
-			break;
-		}
-
-		// Health Regeneration
-		switch (prefs.getInteger("hUpRegen")) {
-		case 1:
-			healthRegen = true;
-			healthRegenTime = 2000;
-			break;
-		case 2:
-			healthRegen = true;
-			healthRegenTime = 1750;
-			break;
-		case 3:
-			healthRegen = true;
-			healthRegenTime = 1500;
-			break;
-		case 4:
-			healthRegen = true;
-			healthRegenTime = 1250;
-			break;
-		case 5:
-			healthRegen = true;
-			healthRegenTime = 1000;
-			break;
-		}
-
-		// Extra Health
-		switch (prefs.getInteger("hUpHealth")) {
-		case 1:
-			player_health = 6;
-			break;
-		case 2:
-			player_health = 7;
-			break;
-		case 3:
-			player_health = 8;
-			break;
-		case 4:
-			player_health = 9;
-			break;
-		case 5:
-			player_health = 10;
-			break;
-		}
-
-		// Rapid Fire Duration
-		switch (prefs.getInteger("rapidUpDur")) {
-		case 1:
-			rapidFireDuration = 1650;
-			break;
-		case 2:
-			rapidFireDuration = 1800;
-			break;
-		case 3:
-			rapidFireDuration = 1950;
-			break;
-		case 4:
-			rapidFireDuration = 2100;
-			break;
-		case 5:
-			rapidFireDuration = 2250;
-			break;
-		default:
-			rapidFireDuration = 1500;
-			break;
-		}
-
-		// Rapid Fire Reload
-		switch (prefs.getInteger("rapidUpReload")) {
-		case 1:
-			rapidFireDur = 9.5;
-			break;
-		case 2:
-			rapidFireDur = 9;
-			break;
-		case 3:
-			rapidFireDur = 8.5;
-			break;
-		case 4:
-			rapidFireDur = 8;
-			break;
-		case 5:
-			rapidFireDur = 7.5;
-			break;
-		}
-
-		// Ricochet Upgrade
-		switch (prefs.getInteger("rapidUpRicochet")) {
-		case 1:
-			ricochet = true;
-			ricochetChance = 1;
-			break;
-		case 2:
-			ricochet = true;
-			ricochetChance = 2;
-			break;
-		case 3:
-			ricochet = true;
-			ricochetChance = 3;
-			break;
-		case 4:
-			ricochet = true;
-			ricochetChance = 4;
-			break;
-		case 5:
-			ricochet = true;
-			ricochetChance = 5;
-			break;
-		}
-
-		// Multi Shot Duration
-		switch (prefs.getInteger("multiUpDur")) {
-		case 1:
-			multiShotDuration = 2587;
-			break;
-		case 2:
-			multiShotDuration = 2925;
-			break;
-		case 3:
-			multiShotDuration = 3262;
-			break;
-		case 4:
-			multiShotDuration = 3600;
-			break;
-		case 5:
-			multiShotDuration = 3937;
-			break;
-		default:
-			multiShotDuration = 2250;
-			break;
-		}
-
-		// Multi Shot missile amount
-		switch (prefs.getInteger("multiUpAmount")) {
-		case 1:
-			multi_extra = true;
-			multi_extra_missiles = 4;
-			break;
-		case 2:
-			multi_extra = true;
-			multi_extra_missiles = 5;
-			break;
-		case 3:
-			multi_extra = true;
-			multi_extra_missiles = 6;
-			break;
-		case 4:
-			multi_extra = true;
-			multi_extra_missiles = 7;
-			break;
-		case 5:
-			multi_extra = true;
-			multi_extra_missiles = 8;
-			break;
-		}
-
-		// Mirror Image Upgrade
-		switch (prefs.getInteger("multiUpMirror")) {
-		case 1:
-			mirror = true;
-			mirrorChance = 1;
-			break;
-		case 2:
-			mirror = true;
-			mirrorChance = 2;
-			break;
-		case 3:
-			mirror = true;
-			mirrorChance = 3;
-			break;
-		case 4:
-			mirror = true;
-			mirrorChance = 4;
-			break;
-		case 5:
-			mirror = true;
-			mirrorChance = 5;
-			break;
-		}
-
-		// Shotgun Duration
-		switch (prefs.getInteger("shotgunUpDur")) {
-		case 1:
-			shotgunDuration = 1375;
-			break;
-		case 2:
-			shotgunDuration = 1500;
-			break;
-		case 3:
-			shotgunDuration = 1625;
-			break;
-		case 4:
-			shotgunDuration = 1750;
-			break;
-		case 5:
-			shotgunDuration = 1875;
-			break;
-		default:
-			shotgunDuration = 1250;
-			break;
-		}
-
-		// Shotgun piercing chance
-		switch (prefs.getInteger("shotgunUpPierce")) {
-		case 1:
-			shotgun_pierce = true;
-			shotgun_pierce_chance = 1;
-			break;
-		case 2:
-			shotgun_pierce = true;
-			shotgun_pierce_chance = 2;
-			break;
-		case 3:
-			shotgun_pierce = true;
-			shotgun_pierce_chance = 3;
-			break;
-		case 4:
-			shotgun_pierce = true;
-			shotgun_pierce_chance = 4;
-			break;
-		case 5:
-			shotgun_pierce = true;
-			shotgun_pierce_chance = 5;
-			break;
-		}
-
-		// Landmine upgrade
-		switch (prefs.getInteger("shotgunUpLandmine")) {
-		case 1:
-			landmine = true;
-			landmineChance = 1;
-			break;
-		case 2:
-			landmine = true;
-			landmineChance = 2;
-			break;
-		case 3:
-			landmine = true;
-			landmineChance = 3;
-			break;
-		case 4:
-			landmine = true;
-			landmineChance = 4;
-			break;
-		case 5:
-			landmine = true;
-			landmineChance = 5;
-			break;
-		}
-
-		// General powerup spawn timer
-		switch (prefs.getInteger("genUpDur")) {
-		case 1:
-			powerup_spawn_timer = 900;
-			break;
-		case 2:
-			powerup_spawn_timer = 800;
-			break;
-		case 3:
-			powerup_spawn_timer = 700;
-			break;
-		case 4:
-			powerup_spawn_timer = 600;
-			break;
-		case 5:
-			powerup_spawn_timer = 500;
-			break;
-		default:
-			powerup_spawn_timer = 1000;
-			break;
-		}
-
-		// General chance to spawn extra powerup
-		switch (prefs.getInteger("genUpExtra")) {
-		case 1:
-			extra_powerup = true;
-			extra_powerup_chance = 1;
-			break;
-		case 2:
-			extra_powerup = true;
-			extra_powerup_chance = 2;
-			break;
-		case 3:
-			extra_powerup = true;
-			extra_powerup_chance = 3;
-			break;
-		case 4:
-			extra_powerup = true;
-			extra_powerup_chance = 4;
-			break;
-		case 5:
-			extra_powerup = true;
-			extra_powerup_chance = 5;
-			break;
-		default:
-			extra_powerup = false;
-			extra_powerup_chance = 0;
-		}
+		playerData.checkPrefs();
+		playerData.checkPowerUpPrefs();
+		
+		stage = new Stage(new StretchViewport(1920, 1080));     //** window is stage **//
+        stage.clear();
+        Gdx.input.setInputProcessor(stage); //** stage is responsive **//
+        
+        
+        buttonSkin = new Skin();
+        buttonSkin.add("fireButtonDown", new Texture("FB_down.png"));
+        buttonSkin.add("fireButtonUp", new Texture("FB_up.png"));
+        TextButtonStyle style = new TextButtonStyle(); //** Button properties **//
+        style.font = font;
+        style.up = buttonSkin.getDrawable("fireButtonUp");
+        style.down = buttonSkin.getDrawable("fireButtonDown");
+		button = new TextButton("", style); //** Button text and style **//
+        button.setPosition(1375, 100); //** Button location **//
+        button.setHeight(150); //** Button Height **//
+        button.setWidth(550); //** Button Width **//
+        button.addListener(new InputListener() {
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                    Gdx.app.log("my app", "Pressed"); //** Usually used to start Game, etc. **//
+                    fireButton = true;
+                    return true;
+            }
+            
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                    Gdx.app.log("my app", "Released");
+                    fireButton = false;
+            }
+        });
+        
+        stage.addActor(button);
 	}
 
 	@Override
@@ -758,11 +249,18 @@ public class GameScreen implements Screen {
 		updateHealthBar();
 
 		// Check if player has been killed
-		if (player_health <= 0) {
+		if (gameData.player_health <= 0) {
 			restart();
 			game.game_screen.dispose();
 			game.setScreen(game.gameOver_screen);
 		}
+
+		batch.setProjectionMatrix(camera.combined);
+
+		stage.act();
+		batch.begin();
+
+		anim_background.draw(batch);
 
 		// If game is paused, enter this statement
 		if (paused) {
@@ -809,53 +307,58 @@ public class GameScreen implements Screen {
 			// Check for any offscreen sprites
 			checkOffScreen();
 			// Check for any collisions between sprites
-			checkCollision();
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					// time to post on the main thread!
+					Gdx.app.postRunnable(new Runnable() {
+						@Override
+						public void run() {
+							// this will be run on the application listener
+							// thread
+							// before the next call to
+							// ApplicationListener#render()
+							checkCollision();
+						}
+					});
+				}
+			}).start();
 		}
 
-		batch.setProjectionMatrix(camera.combined);
-		
-		batch.begin();
-		
-		batch.draw(anim_background.image, anim_background.bounds.x, anim_background.bounds.y);
-		//anim_background.bounds.y += 1;
-		batch.draw(background.image, background.bounds.x, background.bounds.y);
-
 		// Red Dotted line
-		if (autoFire)
+		if (gameData.autoFire)
 			batch.draw(Assets.sprite_auto_aim, player.bounds.x + 80,
 					player.bounds.y - 1080);
 
 		// Player
-		batch.draw(player.image, player.bounds.x, player.bounds.y);
+		player.draw(batch);
 
 		// Mirror Image Side Ships
-		if (mirrorTwins) {
+		if (gameData.mirrorTwins) {
 			batch.draw(Assets.missile_twin, player.bounds.x - 150,
 					player.bounds.y + 60);
 			batch.draw(Assets.bullet_twin, player.bounds.x + 210,
 					player.bounds.y + 60);
 		}
 
+		drawAll();
+
+		// If game is paused, draw sprites underneath the pause display
+		if (paused) {
+			batch.draw(Assets.pause, 260, 80);
+		}
+
+		userInterface.draw(batch);
+
 		// Health Bar
-		batch.draw(health.image, health.bounds.x, health.bounds.y);
-		// Extra Health Bar
-		if (player_health > 5)
-			batch.draw(extrahealth.image, extrahealth.bounds.x,
-					extrahealth.bounds.y);
+		health.draw(batch, gameData);
 
 		// Display Power-Up Text
 		displayPowerText();
 		// Display Score
 		displayScore();
-		drawAll();
 
-		// If game is paused, draw sprites underneath the pause display
-		if (paused) {
-
-			drawAll();
-			batch.draw(Assets.pause, 260, 80);
-		}
-
+		stage.draw();
 		batch.end();
 
 	}
@@ -899,7 +402,7 @@ public class GameScreen implements Screen {
 					// MOVE LEFT
 					if ((touch.x >= 20 && touch.x <= 308)
 							&& (touch.y >= 915 && touch.y <= 1065)) {
-						if (swiftnessPower)
+						if (gameData.swiftnessPower)
 							accelerationX -= 1.75;
 						else
 							accelerationX -= 1.5;
@@ -907,7 +410,7 @@ public class GameScreen implements Screen {
 					// MOVE RIGHT
 					if ((touch.x >= 309 && touch.x <= 600)
 							&& (touch.y >= 915 && touch.y <= 1066)) {
-						if (swiftnessPower)
+						if (gameData.swiftnessPower)
 							accelerationX += 1.75;
 						else
 							accelerationX += 1.5;
@@ -917,18 +420,18 @@ public class GameScreen implements Screen {
 			updatePlayerMovement();
 		}
 
-		if (autoFire) {
-			if (recentlyFired_auto) {
+		if (gameData.autoFire) {
+			if (gameTimers.recentlyFired_auto) {
 			} else {
 
-				if (shotgun)
+				if (gameData.shotgun)
 					bulletSound();
 				else
 					missileSound();
 
-				startTime_auto = System.nanoTime() / nano;
+				gameTimers.startTime_auto = gameTimers.getNanoTime();
 
-				if (shotgun) {
+				if (gameData.shotgun) {
 					timesFired++;
 					spawnBullets();
 				} else {
@@ -939,6 +442,8 @@ public class GameScreen implements Screen {
 			}
 		}
 
+		if(fireButton)
+			spawnMissiles();
 		for (int i = 0; i < 20; i++) {
 
 			if (Gdx.input.isTouched(i)) {
@@ -949,17 +454,17 @@ public class GameScreen implements Screen {
 
 					if (((touch.x >= 20 && touch.x <= 600) && (touch.y >= 915 && touch.y <= 1065))
 							|| ((touch.x >= 1320 && touch.x <= 1900) && (touch.y >= 915 && touch.y <= 1065))) {
-						if (recentlyFired) {
+						if (gameTimers.recentlyFired) {
 						} else {
 
-							if (shotgun)
+							if (gameData.shotgun)
 								bulletSound();
 							else
 								missileSound();
 
-							startTime = System.nanoTime() / nano;
+							gameTimers.startTime = gameTimers.getNanoTime();
 
-							if (shotgun) {
+							if (gameData.shotgun) {
 								timesFired++;
 								spawnBullets();
 							} else {
@@ -972,17 +477,17 @@ public class GameScreen implements Screen {
 				if (control_button) {
 
 					if (((touch.x >= 1320 && touch.x <= 1900) && (touch.y >= 915 && touch.y <= 1065))) {
-						if (recentlyFired) {
+						if (gameTimers.recentlyFired) {
 						} else {
 
-							if (shotgun)
+							if (gameData.shotgun)
 								bulletSound();
 							else
 								missileSound();
 
-							startTime = System.nanoTime() / nano;
+							gameTimers.startTime = gameTimers.getNanoTime();
 
-							if (shotgun) {
+							if (gameData.shotgun) {
 								timesFired++;
 								spawnBullets();
 							} else {
@@ -1027,7 +532,7 @@ public class GameScreen implements Screen {
 			if (e.checkEnd()) {
 				enemies.removeValue(e, false);
 				healthUsed++;
-				player_health--;
+				gameData.player_health--;
 			}
 			enemyUpdate(e);
 		}
@@ -1037,12 +542,380 @@ public class GameScreen implements Screen {
 			}
 			powerUpdate(p);
 		}
-		if (explosionBool) {
+		if (gameData.explosionBool) {
 			for (Explosion e : explosions) {
 				updateExplosions(e.bounds.x, e.bounds.y);
 				e.timer++;
 				if (e.checkEnd())
 					explosions.removeValue(e, false);
+			}
+		}
+	}
+
+	public void checkMissileEnemyCollision() {
+
+		for (Missile m : missiles) {
+			for (Enemy e : enemies) {
+				if (Intersector.overlaps(e.Cbounds, m.bounds)) {
+
+					if (e.normal) {
+						score++;
+						yourScoreName = "" + score;
+						explosionSound(m.bounds.x, m.bounds.y);
+						missiles.removeValue(m, false);
+						enemies.removeValue(e, false);
+					}
+					if (e.gold) {
+						score += 15;
+						yourScoreName = "" + score;
+						enemiesKilled++;
+						explosionSound(m.bounds.x, m.bounds.y);
+						missiles.removeValue(m, false);
+						enemies.removeValue(e, false);
+					}
+					if (e.strong) {
+						e.health--;
+						explosionSound(m.bounds.x, m.bounds.y);
+						missiles.removeValue(m, false);
+						if (e.health <= 0) {
+							score += 8;
+							yourScoreName = "" + score;
+							enemiesKilled++;
+							explosionSound(m.bounds.x, m.bounds.y);
+							enemies.removeValue(e, false);
+						}
+					}
+
+					// If ricochet is active
+					if (gameData.rapidFire) {
+						if (gameData.ricochet) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (gameData.ricochetChance * 10))
+								spawnRicochet(m.bounds);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void checkMissilePowerupCollision() {
+
+		for (Missile m : missiles) {
+			for (Powerup p : powerups) {
+				if (Intersector.overlaps(p.Cbounds, m.bounds)) {
+					// POWERUP
+					if (p.image == Assets.powerup_rapid) {
+						Assets.powerup1.play();
+						gameData.rapidFire = true;
+						gameTimers.rapidFire_start = gameTimers.getNanoTime();
+
+						missiles.removeValue(m, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_spray) {
+						Assets.powerup2.play();
+						gameData.shotgun = true;
+						gameTimers.shotgun_start = gameTimers.getNanoTime();
+
+						missiles.removeValue(m, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_multi) {
+						Assets.powerup4.play();
+						gameData.multiShot = true;
+						if (gameData.mirror) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (20 * gameData.mirrorChance))
+								gameData.mirrorTwins = true;
+						}
+						gameTimers.multiShot_start = gameTimers.getNanoTime();
+
+						missiles.removeValue(m, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_life) {
+						Assets.heal1.play();
+						gameData.player_health++;
+
+						missiles.removeValue(m, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_auto) {
+						Assets.powerup5.play();
+
+						gameData.autoFire = true;
+						gameTimers.autoFire_start = gameTimers.getNanoTime();
+
+						missiles.removeValue(m, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_swiftness) {
+						Assets.powerup6.play();
+
+						gameData.swiftnessPower = true;
+						gameTimers.swiftnessPower_start = gameTimers
+								.getNanoTime();
+
+						missiles.removeValue(m, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_big) {
+						Assets.powerup7.play();
+
+						gameData.bigAmmo = true;
+						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
+
+						missiles.removeValue(m, false);
+						powerups.removeValue(p, false);
+					}
+				}
+			}
+		}
+	}
+
+	public void checkPlayerPowerupCollision() {
+
+		for (Powerup p : powerups) {
+			if (Intersector.overlaps(p.Cbounds, player.bounds)) {
+				// POWERUP
+				if (p.image == Assets.powerup_rapid) {
+					Assets.powerup1.play();
+					gameData.rapidFire = true;
+					gameTimers.rapidFire_start = gameTimers.getNanoTime();
+
+					powerups.removeValue(p, false);
+				}
+				if (p.image == Assets.powerup_spray) {
+					Assets.powerup2.play();
+					gameData.shotgun = true;
+					gameTimers.shotgun_start = gameTimers.getNanoTime();
+
+					powerups.removeValue(p, false);
+				}
+				if (p.image == Assets.powerup_multi) {
+					Assets.powerup4.play();
+					gameData.multiShot = true;
+					gameTimers.multiShot_start = gameTimers.getNanoTime();
+
+					powerups.removeValue(p, false);
+				}
+				if (p.image == Assets.powerup_life) {
+					Assets.heal1.play();
+					gameData.player_health++;
+
+					powerups.removeValue(p, false);
+				}
+				if (p.image == Assets.powerup_auto) {
+					Assets.powerup5.play();
+
+					gameData.autoFire = true;
+					gameTimers.autoFire_start = gameTimers.getNanoTime();
+
+					powerups.removeValue(p, false);
+				}
+				if (p.image == Assets.powerup_swiftness) {
+					Assets.powerup6.play();
+
+					gameData.swiftnessPower = true;
+					gameTimers.swiftnessPower_start = gameTimers.getNanoTime();
+
+					powerups.removeValue(p, false);
+				}
+				if (p.image == Assets.powerup_big) {
+					Assets.powerup7.play();
+
+					gameData.bigAmmo = true;
+					gameTimers.bigAmmo_start = gameTimers.getNanoTime();
+
+					powerups.removeValue(p, false);
+				}
+			}
+		}
+	}
+
+	public void checkBulletEnemyCollision() {
+
+		for (Bullet b : bullets) {
+			for (Enemy e : enemies) {
+				if (Intersector.overlaps(e.Cbounds, b.bounds)) {
+
+					if (e.normal) {
+						score++;
+						yourScoreName = "" + score;
+						enemiesKilled++;
+						explosionSound(b.bounds.x, b.bounds.y);
+						if (gameData.shotgun_pierce) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
+								bullets.removeValue(b, false);
+
+						} else
+							bullets.removeValue(b, false);
+						enemies.removeValue(e, false);
+						if (gameData.landmine) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (10 + (gameData.landmineChance * 5)))
+								landmines.add(new Landmine(b.bounds.x,
+										b.bounds.y));
+						}
+					}
+					if (e.gold) {
+						score += 15;
+						yourScoreName = "" + score;
+						enemiesKilled++;
+						explosionSound(b.bounds.x, b.bounds.y);
+						if (gameData.shotgun_pierce) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
+								bullets.removeValue(b, false);
+						} else
+							bullets.removeValue(b, false);
+						enemies.removeValue(e, false);
+						if (gameData.landmine) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (10 + (gameData.landmineChance * 5)))
+								landmines.add(new Landmine(b.bounds.x,
+										b.bounds.y));
+						}
+					}
+					if (e.strong) {
+						e.health--;
+						explosionSound(b.bounds.x, b.bounds.y);
+						if (gameData.shotgun_pierce) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
+								bullets.removeValue(b, false);
+						} else
+							bullets.removeValue(b, false);
+						if (e.health <= 0) {
+							score += 8;
+							yourScoreName = "" + score;
+							enemiesKilled++;
+							explosionSound(b.bounds.x, b.bounds.y);
+							enemies.removeValue(e, false);
+							if (gameData.landmine) {
+								int chance = rand.nextInt(100) + 1;
+								if (chance <= (10 + (gameData.landmineChance * 5)))
+									landmines.add(new Landmine(b.bounds.x,
+											b.bounds.y));
+							}
+						}
+					}
+
+					if (gameData.rapidFire) {
+						if (gameData.ricochet) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (gameData.ricochetChance * 10))
+								spawnRicochet(b.bounds);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	public void checkBulletPowerupCollision() {
+
+		for (Bullet b : bullets) {
+			for (Powerup p : powerups) {
+				if (Intersector.overlaps(p.Cbounds, b.bounds)) {
+					// POWERUP
+					if (p.image == Assets.powerup_rapid) {
+						Assets.powerup1.play();
+						gameData.rapidFire = true;
+						gameTimers.rapidFire_start = gameTimers.getNanoTime();
+
+						bullets.removeValue(b, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_spray) {
+						Assets.powerup2.play();
+						gameData.shotgun = true;
+						gameTimers.shotgun_start = gameTimers.getNanoTime();
+
+						bullets.removeValue(b, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_multi) {
+						Assets.powerup4.play();
+						gameData.multiShot = true;
+						gameTimers.multiShot_start = gameTimers.getNanoTime();
+
+						bullets.removeValue(b, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_life) {
+						Assets.heal1.play();
+						gameData.player_health++;
+
+						bullets.removeValue(b, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_auto) {
+						Assets.powerup5.play();
+						gameData.autoFire = true;
+						gameTimers.autoFire_start = gameTimers.getNanoTime();
+
+						bullets.removeValue(b, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_swiftness) {
+						Assets.powerup6.play();
+						gameData.swiftnessPower = true;
+						gameTimers.swiftnessPower_start = gameTimers
+								.getNanoTime();
+
+						bullets.removeValue(b, false);
+						powerups.removeValue(p, false);
+					}
+					if (p.image == Assets.powerup_big) {
+						Assets.powerup7.play();
+						gameData.bigAmmo = true;
+						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
+
+						bullets.removeValue(b, false);
+						powerups.removeValue(p, false);
+					}
+				}
+			}
+		}
+	}
+
+	public void checkLandmineEnemyCollision() {
+
+		for (Landmine l : landmines) {
+			for (Enemy e : enemies) {
+				if (Intersector.overlaps(e.Cbounds, l.Cbounds)) {
+
+					if (e.normal) {
+						score++;
+						yourScoreName = "" + score;
+						explosionSound(l.Cbounds.x, l.Cbounds.y);
+						landmines.removeValue(l, false);
+						enemies.removeValue(e, false);
+					}
+					if (e.gold) {
+						score += 15;
+						yourScoreName = "" + score;
+						enemiesKilled++;
+						explosionSound(l.Cbounds.x, l.Cbounds.y);
+						landmines.removeValue(l, false);
+						enemies.removeValue(e, false);
+					}
+					if (e.strong) {
+						e.health--;
+						explosionSound(l.Cbounds.x, l.Cbounds.y);
+						landmines.removeValue(l, false);
+						if (e.health <= 0) {
+							score += 8;
+							yourScoreName = "" + score;
+							enemiesKilled++;
+							explosionSound(l.Cbounds.x, l.Cbounds.y);
+							enemies.removeValue(e, false);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -1084,32 +957,11 @@ public class GameScreen implements Screen {
 					}
 
 					// If ricochet is active
-					if (rapidFire) {
-						if (ricochet) {
+					if (gameData.rapidFire) {
+						if (gameData.ricochet) {
 							int chance = rand.nextInt(100) + 1;
-
-							switch (ricochetChance) {
-							case 1:
-								if (chance <= 10)
-									spawnRicochet(m.bounds);
-								break;
-							case 2:
-								if (chance <= 20)
-									spawnRicochet(m.bounds);
-								break;
-							case 3:
-								if (chance <= 30)
-									spawnRicochet(m.bounds);
-								break;
-							case 4:
-								if (chance <= 40)
-									spawnRicochet(m.bounds);
-								break;
-							case 5:
-								if (chance <= 50)
-									spawnRicochet(m.bounds);
-								break;
-							}
+							if (chance <= (gameData.ricochetChance * 10))
+								spawnRicochet(m.bounds);
 						}
 					}
 				}
@@ -1119,55 +971,36 @@ public class GameScreen implements Screen {
 					// POWERUP
 					if (p.image == Assets.powerup_rapid) {
 						Assets.powerup1.play();
-						rapidFire = true;
-						rapidFire_start = System.nanoTime() / nano;
+						gameData.rapidFire = true;
+						gameTimers.rapidFire_start = gameTimers.getNanoTime();
 
 						missiles.removeValue(m, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_spray) {
 						Assets.powerup2.play();
-						shotgun = true;
-						shotgun_start = System.nanoTime() / nano;
+						gameData.shotgun = true;
+						gameTimers.shotgun_start = gameTimers.getNanoTime();
 
 						missiles.removeValue(m, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_multi) {
 						Assets.powerup4.play();
-						multiShot = true;
-						if (mirror) {
+						gameData.multiShot = true;
+						if (gameData.mirror) {
 							int chance = rand.nextInt(100) + 1;
-
-							switch (mirrorChance) {
-							case 1:
-								if (chance <= 20)
-									mirrorTwins = true;
-								break;
-							case 2:
-								if (chance <= 40)
-									mirrorTwins = true;
-								break;
-							case 3:
-								if (chance <= 60)
-									mirrorTwins = true;
-								break;
-							case 4:
-								if (chance <= 80)
-									mirrorTwins = true;
-								break;
-							case 5:
-								mirrorTwins = true;
-							}
+							if (chance <= (20 * gameData.mirrorChance))
+								gameData.mirrorTwins = true;
 						}
-						multiShot_start = System.nanoTime() / nano;
+						gameTimers.multiShot_start = gameTimers.getNanoTime();
 
 						missiles.removeValue(m, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_life) {
 						Assets.heal1.play();
-						player_health++;
+						gameData.player_health++;
 
 						missiles.removeValue(m, false);
 						powerups.removeValue(p, false);
@@ -1175,8 +1008,8 @@ public class GameScreen implements Screen {
 					if (p.image == Assets.powerup_auto) {
 						Assets.powerup5.play();
 
-						autoFire = true;
-						autoFire_start = System.nanoTime() / nano;
+						gameData.autoFire = true;
+						gameTimers.autoFire_start = gameTimers.getNanoTime();
 
 						missiles.removeValue(m, false);
 						powerups.removeValue(p, false);
@@ -1184,8 +1017,9 @@ public class GameScreen implements Screen {
 					if (p.image == Assets.powerup_swiftness) {
 						Assets.powerup6.play();
 
-						swiftnessPower = true;
-						swiftnessPower_start = System.nanoTime() / nano;
+						gameData.swiftnessPower = true;
+						gameTimers.swiftnessPower_start = gameTimers
+								.getNanoTime();
 
 						missiles.removeValue(m, false);
 						powerups.removeValue(p, false);
@@ -1193,8 +1027,8 @@ public class GameScreen implements Screen {
 					if (p.image == Assets.powerup_big) {
 						Assets.powerup7.play();
 
-						bigAmmo = true;
-						bigAmmo_start = System.nanoTime() / nano;
+						gameData.bigAmmo = true;
+						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
 
 						missiles.removeValue(m, false);
 						powerups.removeValue(p, false);
@@ -1204,52 +1038,53 @@ public class GameScreen implements Screen {
 					// POWERUP
 					if (p.image == Assets.powerup_rapid) {
 						Assets.powerup1.play();
-						rapidFire = true;
-						rapidFire_start = System.nanoTime() / nano;
+						gameData.rapidFire = true;
+						gameTimers.rapidFire_start = gameTimers.getNanoTime();
 
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_spray) {
 						Assets.powerup2.play();
-						shotgun = true;
-						shotgun_start = System.nanoTime() / nano;
+						gameData.shotgun = true;
+						gameTimers.shotgun_start = gameTimers.getNanoTime();
 
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_multi) {
 						Assets.powerup4.play();
-						multiShot = true;
-						multiShot_start = System.nanoTime() / nano;
+						gameData.multiShot = true;
+						gameTimers.multiShot_start = gameTimers.getNanoTime();
 
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_life) {
 						Assets.heal1.play();
-						player_health++;
+						gameData.player_health++;
 
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_auto) {
 						Assets.powerup5.play();
 
-						autoFire = true;
-						autoFire_start = System.nanoTime() / nano;
+						gameData.autoFire = true;
+						gameTimers.autoFire_start = gameTimers.getNanoTime();
 
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_swiftness) {
 						Assets.powerup6.play();
 
-						swiftnessPower = true;
-						swiftnessPower_start = System.nanoTime() / nano;
+						gameData.swiftnessPower = true;
+						gameTimers.swiftnessPower_start = gameTimers
+								.getNanoTime();
 
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_big) {
 						Assets.powerup7.play();
 
-						bigAmmo = true;
-						bigAmmo_start = System.nanoTime() / nano;
+						gameData.bigAmmo = true;
+						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
 
 						powerups.removeValue(p, false);
 					}
@@ -1265,62 +1100,19 @@ public class GameScreen implements Screen {
 						yourScoreName = "" + score;
 						enemiesKilled++;
 						explosionSound(b.bounds.x, b.bounds.y);
-						if (shotgun_pierce) {
+						if (gameData.shotgun_pierce) {
 							int chance = rand.nextInt(100) + 1;
-							switch (shotgun_pierce_chance) {
-							case 5:
-								break;
-							case 4:
-								if (chance <= 20)
-									bullets.removeValue(b, false);
-								break;
-							case 3:
-								if (chance <= 40)
-									bullets.removeValue(b, false);
-								break;
-							case 2:
-								if (chance <= 60)
-									bullets.removeValue(b, false);
-								break;
-							case 1:
-								if (chance <= 80)
-									bullets.removeValue(b, false);
-								break;
-							}
+							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
+								bullets.removeValue(b, false);
 
 						} else
 							bullets.removeValue(b, false);
 						enemies.removeValue(e, false);
-						if (landmine) {
+						if (gameData.landmine) {
 							int chance = rand.nextInt(100) + 1;
-							switch (landmineChance) {
-							case 1:
-								if (chance <= 10)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							case 2:
-								if (chance <= 20)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							case 3:
-								if (chance <= 25)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							case 4:
-								if (chance <= 30)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							case 5:
-								if (chance <= 35)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							}
-
+							if (chance <= (10 + (gameData.landmineChance * 5)))
+								landmines.add(new Landmine(b.bounds.x,
+										b.bounds.y));
 						}
 					}
 					if (e.gold) {
@@ -1328,90 +1120,27 @@ public class GameScreen implements Screen {
 						yourScoreName = "" + score;
 						enemiesKilled++;
 						explosionSound(b.bounds.x, b.bounds.y);
-						if (shotgun_pierce) {
+						if (gameData.shotgun_pierce) {
 							int chance = rand.nextInt(100) + 1;
-							switch (shotgun_pierce_chance) {
-							case 5:
-								break;
-							case 4:
-								if (chance <= 20)
-									bullets.removeValue(b, false);
-								break;
-							case 3:
-								if (chance <= 40)
-									bullets.removeValue(b, false);
-								break;
-							case 2:
-								if (chance <= 60)
-									bullets.removeValue(b, false);
-								break;
-							case 1:
-								if (chance <= 80)
-									bullets.removeValue(b, false);
-								break;
-							}
-
+							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
+								bullets.removeValue(b, false);
 						} else
 							bullets.removeValue(b, false);
 						enemies.removeValue(e, false);
-						if (landmine) {
+						if (gameData.landmine) {
 							int chance = rand.nextInt(100) + 1;
-							switch (landmineChance) {
-							case 1:
-								if (chance <= 10)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							case 2:
-								if (chance <= 20)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							case 3:
-								if (chance <= 25)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							case 4:
-								if (chance <= 30)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							case 5:
-								if (chance <= 35)
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-								break;
-							}
-
+							if (chance <= (10 + (gameData.landmineChance * 5)))
+								landmines.add(new Landmine(b.bounds.x,
+										b.bounds.y));
 						}
 					}
 					if (e.strong) {
 						e.health--;
 						explosionSound(b.bounds.x, b.bounds.y);
-						if (shotgun_pierce) {
+						if (gameData.shotgun_pierce) {
 							int chance = rand.nextInt(100) + 1;
-							switch (shotgun_pierce_chance) {
-							case 5:
-								break;
-							case 4:
-								if (chance <= 20)
-									bullets.removeValue(b, false);
-								break;
-							case 3:
-								if (chance <= 40)
-									bullets.removeValue(b, false);
-								break;
-							case 2:
-								if (chance <= 60)
-									bullets.removeValue(b, false);
-								break;
-							case 1:
-								if (chance <= 80)
-									bullets.removeValue(b, false);
-								break;
-							}
-
+							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
+								bullets.removeValue(b, false);
 						} else
 							bullets.removeValue(b, false);
 						if (e.health <= 0) {
@@ -1420,66 +1149,20 @@ public class GameScreen implements Screen {
 							enemiesKilled++;
 							explosionSound(b.bounds.x, b.bounds.y);
 							enemies.removeValue(e, false);
-							if (landmine) {
+							if (gameData.landmine) {
 								int chance = rand.nextInt(100) + 1;
-								switch (landmineChance) {
-								case 1:
-									if (chance <= 10)
-										landmines.add(new Landmine(b.bounds.x,
-												b.bounds.y));
-									break;
-								case 2:
-									if (chance <= 20)
-										landmines.add(new Landmine(b.bounds.x,
-												b.bounds.y));
-									break;
-								case 3:
-									if (chance <= 25)
-										landmines.add(new Landmine(b.bounds.x,
-												b.bounds.y));
-									break;
-								case 4:
-									if (chance <= 30)
-										landmines.add(new Landmine(b.bounds.x,
-												b.bounds.y));
-									break;
-								case 5:
-									if (chance <= 35)
-										landmines.add(new Landmine(b.bounds.x,
-												b.bounds.y));
-									break;
-								}
-
+								if (chance <= (10 + (gameData.landmineChance * 5)))
+									landmines.add(new Landmine(b.bounds.x,
+											b.bounds.y));
 							}
 						}
 					}
 
-					if (rapidFire) {
-						if (ricochet) {
+					if (gameData.rapidFire) {
+						if (gameData.ricochet) {
 							int chance = rand.nextInt(100) + 1;
-
-							switch (ricochetChance) {
-							case 1:
-								if (chance <= 10)
-									spawnRicochet(b.bounds);
-								break;
-							case 2:
-								if (chance <= 20)
-									spawnRicochet(b.bounds);
-								break;
-							case 3:
-								if (chance <= 30)
-									spawnRicochet(b.bounds);
-								break;
-							case 4:
-								if (chance <= 40)
-									spawnRicochet(b.bounds);
-								break;
-							case 5:
-								if (chance <= 50)
-									spawnRicochet(b.bounds);
-								break;
-							}
+							if (chance <= (gameData.ricochetChance * 10))
+								spawnRicochet(b.bounds);
 						}
 					}
 				}
@@ -1489,55 +1172,56 @@ public class GameScreen implements Screen {
 					// POWERUP
 					if (p.image == Assets.powerup_rapid) {
 						Assets.powerup1.play();
-						rapidFire = true;
-						rapidFire_start = System.nanoTime() / nano;
+						gameData.rapidFire = true;
+						gameTimers.rapidFire_start = gameTimers.getNanoTime();
 
 						bullets.removeValue(b, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_spray) {
 						Assets.powerup2.play();
-						shotgun = true;
-						shotgun_start = System.nanoTime() / nano;
+						gameData.shotgun = true;
+						gameTimers.shotgun_start = gameTimers.getNanoTime();
 
 						bullets.removeValue(b, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_multi) {
 						Assets.powerup4.play();
-						multiShot = true;
-						multiShot_start = System.nanoTime() / nano;
+						gameData.multiShot = true;
+						gameTimers.multiShot_start = gameTimers.getNanoTime();
 
 						bullets.removeValue(b, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_life) {
 						Assets.heal1.play();
-						player_health++;
+						gameData.player_health++;
 
 						bullets.removeValue(b, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_auto) {
 						Assets.powerup5.play();
-						autoFire = true;
-						autoFire_start = System.nanoTime() / nano;
+						gameData.autoFire = true;
+						gameTimers.autoFire_start = gameTimers.getNanoTime();
 
 						bullets.removeValue(b, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_swiftness) {
 						Assets.powerup6.play();
-						swiftnessPower = true;
-						swiftnessPower_start = System.nanoTime() / nano;
+						gameData.swiftnessPower = true;
+						gameTimers.swiftnessPower_start = gameTimers
+								.getNanoTime();
 
 						bullets.removeValue(b, false);
 						powerups.removeValue(p, false);
 					}
 					if (p.image == Assets.powerup_big) {
 						Assets.powerup7.play();
-						bigAmmo = true;
-						bigAmmo_start = System.nanoTime() / nano;
+						gameData.bigAmmo = true;
+						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
 
 						bullets.removeValue(b, false);
 						powerups.removeValue(p, false);
@@ -1587,11 +1271,11 @@ public class GameScreen implements Screen {
 	public void missileUpdate(Missile missile) {
 		missile.bounds.y -= 15;
 
-		batch.begin();
+		// batch.begin();
 
 		batch.draw(missile.image, missile.bounds.x, missile.bounds.y);
 
-		batch.end();
+		// batch.end();
 	}
 
 	/*
@@ -1601,18 +1285,18 @@ public class GameScreen implements Screen {
 		bullet.bounds.y -= bullet.yUpdate;
 		bullet.bounds.x -= bullet.xUpdate;
 
-		batch.begin();
+		// batch.begin();
 
 		batch.draw(bullet.image, bullet.bounds.x, bullet.bounds.y);
 
-		batch.end();
+		// batch.end();
 	}
 
 	/*
 	 * Updates movement of enemies
 	 */
 	public void enemyUpdate(Enemy enemy) {
-		batch.begin();
+		// batch.begin();
 
 		if (enemy.normal) {
 			enemy.Cbounds.y += 3.25;
@@ -1630,7 +1314,7 @@ public class GameScreen implements Screen {
 					enemy.Cbounds.y - (float) 100);
 		}
 
-		batch.end();
+		// batch.end();
 	}
 
 	/*
@@ -1639,21 +1323,21 @@ public class GameScreen implements Screen {
 	public void powerUpdate(Powerup powerup) {
 		powerup.Cbounds.y += 2.5;
 
-		batch.begin();
+		// batch.begin();
 
 		batch.draw(powerup.image, powerup.Cbounds.x - 75,
 				powerup.Cbounds.y - 85);
 
-		batch.end();
+		// batch.end();
 	}
 
 	public void landmineUpdate(Landmine landmine) {
-		batch.begin();
+		// batch.begin();
 
 		batch.draw(landmine.image, landmine.Cbounds.x - 30,
 				landmine.Cbounds.y - 30);
 
-		batch.end();
+		// batch.end();
 	}
 
 	@Override
@@ -1761,42 +1445,42 @@ public class GameScreen implements Screen {
 	 */
 	public void updateHealthBar() {
 
-		if (player_health >= 10)
-			player_health = 10;
-		switch (player_health) {
+		if (gameData.player_health >= 10)
+			gameData.player_health = 10;
+		switch (gameData.player_health) {
 		case 10:
-			extrahealth.image = Assets.extrahealth_5;
-			health.image = Assets.health_5;
+			health.extraHealth = Assets.extrahealth_5;
+			health.health = Assets.health_5;
 			break;
 		case 9:
-			extrahealth.image = Assets.extrahealth_4;
-			health.image = Assets.health_5;
+			health.extraHealth = Assets.extrahealth_4;
+			health.health = Assets.health_5;
 			break;
 		case 8:
-			extrahealth.image = Assets.extrahealth_3;
-			health.image = Assets.health_5;
+			health.extraHealth = Assets.extrahealth_3;
+			health.health = Assets.health_5;
 			break;
 		case 7:
-			extrahealth.image = Assets.extrahealth_2;
-			health.image = Assets.health_5;
+			health.extraHealth = Assets.extrahealth_2;
+			health.health = Assets.health_5;
 			break;
 		case 6:
-			extrahealth.image = Assets.extrahealth_1;
-			health.image = Assets.health_5;
+			health.extraHealth = Assets.extrahealth_1;
+			health.health = Assets.health_5;
 		case 5:
-			health.image = Assets.health_5;
+			health.health = Assets.health_5;
 			break;
 		case 4:
-			health.image = Assets.health_4;
+			health.health = Assets.health_4;
 			break;
 		case 3:
-			health.image = Assets.health_3;
+			health.health = Assets.health_3;
 			break;
 		case 2:
-			health.image = Assets.health_2;
+			health.health = Assets.health_2;
 			break;
 		case 1:
-			health.image = Assets.health_1;
+			health.health = Assets.health_1;
 			break;
 		}
 	}
@@ -1838,13 +1522,13 @@ public class GameScreen implements Screen {
 
 	// Receives an integer and maps it to the String highScore in prefs
 	public static void setHighScore(int val) {
-		prefs.putInteger("highScore", val);
-		prefs.flush();
+		PlayerData.prefs.putInteger("highScore", val);
+		PlayerData.prefs.flush();
 	}
 
 	// Retrieves the current high score
 	public static int getHighScore() {
-		return prefs.getInteger("highScore");
+		return PlayerData.prefs.getInteger("highScore");
 	}
 
 	/*
@@ -1862,20 +1546,20 @@ public class GameScreen implements Screen {
 		MenuScreen.setCurrency(score * 2);
 
 		coinsEarned = score * 2;
-		long gameEnd = System.nanoTime() / nano;
-		timeElapsed = (int) (gameEnd - gameStart) / 100;
+		long gameEnd = gameTimers.getNanoTime();
+		timeElapsed = (int) (gameEnd - gameTimers.gameStart) / 100;
 
-		player_health = 5;
+		gameData.player_health = 5;
 		enemySpawnRate = 150;
 		accelerationX = 0;
 		yourScoreName = "0";
 
-		rapidFire = false;
-		shotgun = false;
-		multiShot = false;
-		autoFire = false;
-		swiftnessPower = false;
-		bigAmmo = false;
+		gameData.rapidFire = false;
+		gameData.shotgun = false;
+		gameData.multiShot = false;
+		gameData.autoFire = false;
+		gameData.swiftnessPower = false;
+		gameData.bigAmmo = false;
 
 		player.bounds.x = 880;
 		player.bounds.y = 740;
@@ -1932,149 +1616,118 @@ public class GameScreen implements Screen {
 		else if (score >= 500)
 			enemySpawnRate = 60;
 
-		if (healthRegen) {
-			healthRegen_end = System.nanoTime() / nano;
-			healthRegen_dur = (healthRegen_end - healthRegen_start);
-			if (healthRegen_dur >= healthRegenTime) {
-				player_health++;
+		if (gameData.healthRegen) {
+			gameTimers.healthRegen_end = gameTimers.getNanoTime();
+			gameTimers.healthRegen_dur = (gameTimers.healthRegen_end - gameTimers.healthRegen_start);
+			if (gameTimers.healthRegen_dur >= gameTimers.healthRegenTime) {
+				gameData.player_health++;
 				Assets.heal1.play();
-				healthRegen_start = healthRegen_end;
+				gameTimers.healthRegen_start = gameTimers.healthRegen_end;
 			}
 		}
 
-		autoShotEnd = System.nanoTime() / nano;
-		autoShotDur = (autoShotEnd - autoShotStart);
-		if (autoShotDur >= autoShotTime) {
-			if (autoShot) {
-				if (shotgun)
+		gameTimers.autoShotEnd = gameTimers.getNanoTime();
+		gameTimers.autoShotDur = (gameTimers.autoShotEnd - gameTimers.autoShotStart);
+		if (gameTimers.autoShotDur >= gameTimers.autoShotTime) {
+			if (gameData.autoShot) {
+				if (gameData.shotgun)
 					spawnBullets();
 				else
 					spawnMissiles();
 			}
-			autoShotStart = autoShotEnd;
+			gameTimers.autoShotStart = gameTimers.autoShotEnd;
 		}
 
-		rapidFire_end = System.nanoTime() / nano;
-		rapidFire_dur = (rapidFire_end - rapidFire_start);
-		if (rapidFire_dur >= rapidFireDuration) {
-			rapidFire = false;
+		gameTimers.rapidFire_end = gameTimers.getNanoTime();
+		gameTimers.rapidFire_dur = (gameTimers.rapidFire_end - gameTimers.rapidFire_start);
+		if (gameTimers.rapidFire_dur >= gameTimers.rapidFireDuration) {
+			gameData.rapidFire = false;
 		}
 
-		shotgun_end = System.nanoTime() / nano;
-		shotgun_dur = (shotgun_end - shotgun_start);
-		if (shotgun_dur >= shotgunDuration) {
-			shotgun = false;
+		gameTimers.shotgun_end = gameTimers.getNanoTime();
+		gameTimers.shotgun_dur = (gameTimers.shotgun_end - gameTimers.shotgun_start);
+		if (gameTimers.shotgun_dur >= gameTimers.shotgunDuration) {
+			gameData.shotgun = false;
 		}
 
-		multiShot_end = System.nanoTime() / nano;
-		multiShot_dur = (multiShot_end - multiShot_start);
-		if (multiShot_dur >= multiShotDuration) {
-			multiShot = false;
-			mirrorTwins = false;
+		gameTimers.multiShot_end = gameTimers.getNanoTime();
+		gameTimers.multiShot_dur = (gameTimers.multiShot_end - gameTimers.multiShot_start);
+		if (gameTimers.multiShot_dur >= gameTimers.multiShotDuration) {
+			gameData.multiShot = false;
+			gameData.mirrorTwins = false;
 		}
 
-		autoFire_end = System.nanoTime() / nano;
-		autoFire_dur = (autoFire_end - autoFire_start);
-		if (autoFire_dur >= 1500) {
-			autoFire = false;
+		gameTimers.autoFire_end = gameTimers.getNanoTime();
+		gameTimers.autoFire_dur = (gameTimers.autoFire_end - gameTimers.autoFire_start);
+		if (gameTimers.autoFire_dur >= 1500) {
+			gameData.autoFire = false;
 		}
 
-		swiftnessPower_end = System.nanoTime() / nano;
-		swiftnessPower_dur = (swiftnessPower_end - swiftnessPower_start);
-		if (swiftnessPower_dur >= 1500) {
-			swiftnessPower = false;
+		gameTimers.swiftnessPower_end = gameTimers.getNanoTime();
+		gameTimers.swiftnessPower_dur = (gameTimers.swiftnessPower_end - gameTimers.swiftnessPower_start);
+		if (gameTimers.swiftnessPower_dur >= 1500) {
+			gameData.swiftnessPower = false;
 		}
 
-		bigAmmo_end = System.nanoTime() / nano;
-		bigAmmo_dur = (bigAmmo_end - bigAmmo_start);
-		if (bigAmmo_dur >= 2250) {
-			bigAmmo = false;
+		gameTimers.bigAmmo_end = gameTimers.getNanoTime();
+		gameTimers.bigAmmo_dur = (gameTimers.bigAmmo_end - gameTimers.bigAmmo_start);
+		if (gameTimers.bigAmmo_dur >= 2250) {
+			gameData.bigAmmo = false;
 		}
 
-		powerEnd = System.nanoTime() / nano;
-		powerDur = powerEnd - powerStart;
+		gameTimers.powerEnd = gameTimers.getNanoTime();
+		gameTimers.powerDur = gameTimers.powerEnd - gameTimers.powerStart;
 		// Spawn new powerup
-		if (powerDur >= powerup_spawn_timer) {
+		if (gameTimers.powerDur >= gameTimers.powerup_spawn_timer) {
 			int randomNum = rand.nextInt(1752) + 52;
 			int randomPower = rand.nextInt(7) + 1;
 			powerups.add(new Powerup(randomNum, randomPower));
-			if (extra_powerup) {
-					int chance = rand.nextInt(100) + 1;
-					switch (extra_powerup_chance) {
-					case 1:
-						if (chance <= 15){
-							randomNum = rand.nextInt(1752) + 52;
-							randomPower = rand.nextInt(7) + 1;
-							powerups.add(new Powerup(randomNum, randomPower));
-						}
-						break;
-					case 2:
-						if (chance <= 30){
-							randomNum = rand.nextInt(1752) + 52;
-							randomPower = rand.nextInt(7) + 1;
-							powerups.add(new Powerup(randomNum, randomPower));
-						}
-						break;
-					case 3:
-						if (chance <= 45){
-							randomNum = rand.nextInt(1752) + 52;
-							randomPower = rand.nextInt(7) + 1;
-							powerups.add(new Powerup(randomNum, randomPower));
-						}
-						break;
-					case 4:
-						if (chance <= 60){
-							randomNum = rand.nextInt(1752) + 52;
-							randomPower = rand.nextInt(7) + 1;
-							powerups.add(new Powerup(randomNum, randomPower));
-						}
-						break;
-					case 5:
-						if (chance <= 75){
-							randomNum = rand.nextInt(1752) + 52;
-							randomPower = rand.nextInt(7) + 1;
-							powerups.add(new Powerup(randomNum, randomPower));
-						}
-						break;
-					}
+			if (gameData.extra_powerup) {
+				int chance = rand.nextInt(100) + 1;
+				if (chance <= (gameData.extra_powerup_chance * 15)) {
+					randomNum = rand.nextInt(1752) + 52;
+					randomPower = rand.nextInt(7) + 1;
+					powerups.add(new Powerup(randomNum, randomPower));
 				}
-			powerStart = powerEnd;
+			}
+			gameTimers.powerStart = gameTimers.powerEnd;
 		}
 
-		enemyEnd = System.nanoTime() / nano;
-		enemyDur = enemyEnd - enemyStart;
+		gameTimers.enemyEnd = gameTimers.getNanoTime();
+		gameTimers.enemyDur = gameTimers.enemyEnd - gameTimers.enemyStart;
 		// Spawn new enemy
-		if (enemyDur >= enemySpawnRate) {
+		if (gameTimers.enemyDur >= enemySpawnRate) {
 			int spawnArea = rand.nextInt(1752) + 52;
 			int chooseEnemy = rand.nextInt(20) + 1;
 			enemies.add(new Enemy(spawnArea, chooseEnemy));
-			enemyStart = enemyEnd;
+			gameTimers.enemyStart = gameTimers.enemyEnd;
 		}
 
-		endTime = System.nanoTime() / nano;
-		duration = endTime - startTime;
-		if (rapidFire) {
-			if (duration >= rapidFireDur)
-				recentlyFired = false;
+		gameTimers.endTime = gameTimers.getNanoTime();
+		gameTimers.duration = gameTimers.endTime - gameTimers.startTime;
+		if (gameData.rapidFire) {
+			if (gameTimers.duration >= gameTimers.rapidFireDur)
+				gameTimers.recentlyFired = false;
 			else
-				recentlyFired = true;
-		} else if (duration >= reloadDur) {
-			recentlyFired = false;
-		} else if (duration < reloadDur) {
-			recentlyFired = true;
+				gameTimers.recentlyFired = true;
+		} else if (gameTimers.duration >= gameTimers.reloadDur) {
+			gameTimers.recentlyFired = false;
+		} else if (gameTimers.duration < gameTimers.reloadDur) {
+			gameTimers.recentlyFired = true;
 		}
 
-		endTime_auto = System.nanoTime() / nano;
-		duration_auto = endTime_auto - startTime_auto;
-		if (rapidFire) {
-			if (duration_auto >= rapidFireDur)
-				recentlyFired_auto = false;
+		gameTimers.endTime_auto = gameTimers.getNanoTime();
+		gameTimers.duration_auto = gameTimers.endTime_auto
+				- gameTimers.startTime_auto;
+		if (gameData.rapidFire) {
+			if (gameTimers.duration_auto >= gameTimers.rapidFireDur)
+				gameTimers.recentlyFired_auto = false;
 			else
-				recentlyFired_auto = true;
-		} else if (duration_auto >= reloadDur_auto) {
-			recentlyFired_auto = false;
-		} else if (duration_auto < reloadDur_auto) {
-			recentlyFired_auto = true;
+				gameTimers.recentlyFired_auto = true;
+		} else if (gameTimers.duration_auto >= gameTimers.reloadDur_auto) {
+			gameTimers.recentlyFired_auto = false;
+		} else if (gameTimers.duration_auto < gameTimers.reloadDur_auto) {
+			gameTimers.recentlyFired_auto = true;
 		}
 	}
 
@@ -2092,18 +1745,18 @@ public class GameScreen implements Screen {
 			accelerationX += 1.5;
 		}
 
-		if (autoFire) {
-			if (recentlyFired_auto) {
+		if (gameData.autoFire) {
+			if (gameTimers.recentlyFired_auto) {
 			} else {
 
-				if (shotgun)
+				if (gameData.shotgun)
 					bulletSound();
 				else
 					missileSound();
 
-				startTime_auto = System.nanoTime() / nano;
+				gameTimers.startTime_auto = gameTimers.getNanoTime();
 
-				if (shotgun) {
+				if (gameData.shotgun) {
 					spawnBullets();
 				} else {
 					spawnMissiles();
@@ -2113,17 +1766,17 @@ public class GameScreen implements Screen {
 		}
 		if (Gdx.input.isKeyPressed(Keys.F)
 				|| Gdx.input.isButtonPressed(Buttons.LEFT)) {
-			if (recentlyFired) {
+			if (gameTimers.recentlyFired) {
 			} else {
 
-				if (shotgun)
+				if (gameData.shotgun)
 					bulletSound();
 				else
 					missileSound();
 
-				startTime = System.nanoTime() / nano;
+				gameTimers.startTime = gameTimers.getNanoTime();
 
-				if (shotgun) {
+				if (gameData.shotgun) {
 					spawnBullets();
 				} else {
 					spawnMissiles();
@@ -2167,10 +1820,10 @@ public class GameScreen implements Screen {
 	 */
 	public void spawnBullets() {
 
-		if (bigAmmo) {
-			if (multiShot) {
-				if (multi_extra) {
-					switch (multi_extra_missiles) {
+		if (gameData.bigAmmo) {
+			if (gameData.multiShot) {
+				if (gameData.multi_extra) {
+					switch (gameData.multi_extra_missiles) {
 					case 4:
 						bullets.add(new Bullet(player.bounds.x + 13,
 								player.bounds.y + 32, -5, 7, true));
@@ -2246,9 +1899,9 @@ public class GameScreen implements Screen {
 			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 6, 5, true));
 		} else {
 
-			if (multiShot) {
-				if (multi_extra) {
-					switch (multi_extra_missiles) {
+			if (gameData.multiShot) {
+				if (gameData.multi_extra) {
+					switch (gameData.multi_extra_missiles) {
 					case 4:
 						bullets.add(new Bullet(player.bounds.x + 13,
 								player.bounds.y + 32, -5, 7));
@@ -2320,7 +1973,7 @@ public class GameScreen implements Screen {
 			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 6, 5));
 		}
 
-		if (mirrorTwins) {
+		if (gameData.mirrorTwins) {
 
 			missiles.add(new Missile(player.bounds.x - 160,
 					player.bounds.y + 80));
@@ -2349,10 +2002,10 @@ public class GameScreen implements Screen {
 	 */
 	public void spawnMissiles() {
 
-		if (bigAmmo) {
-			if (multiShot) {
-				if (multi_extra) {
-					switch (multi_extra_missiles) {
+		if (gameData.bigAmmo) {
+			if (gameData.multiShot) {
+				if (gameData.multi_extra) {
+					switch (gameData.multi_extra_missiles) {
 					case 4:
 						missiles.add(new Missile(player.bounds.x + 13,
 								player.bounds.y + 32, true));
@@ -2403,9 +2056,9 @@ public class GameScreen implements Screen {
 			missiles.add(new Missile(player.bounds.x, player.bounds.y, true));
 		} else {
 
-			if (multiShot) {
-				if (multi_extra) {
-					switch (multi_extra_missiles) {
+			if (gameData.multiShot) {
+				if (gameData.multi_extra) {
+					switch (gameData.multi_extra_missiles) {
 					case 4:
 						missiles.add(new Missile(player.bounds.x + 13,
 								player.bounds.y + 18));
@@ -2456,7 +2109,7 @@ public class GameScreen implements Screen {
 			missiles.add(new Missile(player.bounds.x, player.bounds.y));
 		}
 
-		if (mirrorTwins) {
+		if (gameData.mirrorTwins) {
 
 			missiles.add(new Missile(player.bounds.x - 160,
 					player.bounds.y + 80));
@@ -2519,7 +2172,7 @@ public class GameScreen implements Screen {
 		touch.x = 0;
 		touch.y = 0;
 
-		pauseTime = System.nanoTime() / nano;
+		gameTimers.pauseTime = gameTimers.getNanoTime();
 		try {
 			Thread.sleep(300);
 		} catch (InterruptedException e) {
@@ -2545,19 +2198,19 @@ public class GameScreen implements Screen {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		long resumeTime = System.nanoTime() / nano;
-		long pauseDiff = resumeTime - pauseTime;
-		rapidFire_start += pauseDiff;
-		shotgun_start += pauseDiff;
-		multiShot_start += pauseDiff;
-		autoFire_start += pauseDiff;
-		swiftnessPower_start += pauseDiff;
-		bigAmmo_start += pauseDiff;
-		startTime += pauseDiff;
-		enemyStart += pauseDiff;
-		powerStart += pauseDiff;
-		autoShotStart += pauseDiff;
-		gameStart += pauseDiff;
+		long resumeTime = gameTimers.getNanoTime();
+		long pauseDiff = resumeTime - gameTimers.pauseTime;
+		gameTimers.rapidFire_start += pauseDiff;
+		gameTimers.shotgun_start += pauseDiff;
+		gameTimers.multiShot_start += pauseDiff;
+		gameTimers.autoFire_start += pauseDiff;
+		gameTimers.swiftnessPower_start += pauseDiff;
+		gameTimers.bigAmmo_start += pauseDiff;
+		gameTimers.startTime += pauseDiff;
+		gameTimers.enemyStart += pauseDiff;
+		gameTimers.powerStart += pauseDiff;
+		gameTimers.autoShotStart += pauseDiff;
+		gameTimers.gameStart += pauseDiff;
 	}
 
 	/*
@@ -2567,22 +2220,22 @@ public class GameScreen implements Screen {
 	 */
 	public void displayPowerText() {
 
-		if (rapidFire)
+		if (gameData.rapidFire)
 			batch.draw(powertextrapid.image, powertextrapid.bounds.x,
 					powertextrapid.bounds.y);
-		if (shotgun)
+		if (gameData.shotgun)
 			batch.draw(powertextspray.image, powertextspray.bounds.x,
 					powertextspray.bounds.y);
-		if (multiShot)
+		if (gameData.multiShot)
 			batch.draw(powertextmulti.image, powertextmulti.bounds.x,
 					powertextmulti.bounds.y);
-		if (autoFire)
+		if (gameData.autoFire)
 			batch.draw(powertextauto.image, powertextauto.bounds.x,
 					powertextauto.bounds.y);
-		if (swiftnessPower)
+		if (gameData.swiftnessPower)
 			batch.draw(powertextswiftness.image, powertextswiftness.bounds.x,
 					powertextswiftness.bounds.y);
-		if (bigAmmo)
+		if (gameData.bigAmmo)
 			batch.draw(powertextbig.image, powertextbig.bounds.x,
 					powertextbig.bounds.y);
 	}
@@ -2625,7 +2278,7 @@ public class GameScreen implements Screen {
 
 		player.bounds.x += accelerationX;
 
-		if (swiftnessPower) {
+		if (gameData.swiftnessPower) {
 			if (accelRight)
 				accelerationX -= 0.33;
 			if (accelLeft)
@@ -2644,7 +2297,7 @@ public class GameScreen implements Screen {
 	public void computeMovement(float Y) {
 
 		double factor = 1;
-		if (swiftnessPower)
+		if (gameData.swiftnessPower)
 			factor = 1.25;
 
 		if (Y > 0 && Y <= 0.25) {
@@ -2740,7 +2393,7 @@ public class GameScreen implements Screen {
 	 */
 	public void explosionSound(float x, float y) {
 
-		explosionBool = true;
+		gameData.explosionBool = true;
 		explosions.add(new Explosion(x, y));
 
 		int randomNum = rand.nextInt(6) + 1;
@@ -2835,11 +2488,11 @@ public class GameScreen implements Screen {
 		stateTime += Gdx.graphics.getDeltaTime();
 		Assets.current_frame = Assets.explosion_animation.getKeyFrame(
 				stateTime, true);
-		batch.begin();
+		// batch.begin();
 
 		batch.draw(Assets.current_frame, x, y);
 
-		batch.end();
+		// batch.end();
 
 	}
 

@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class GameOverScreen extends ApplicationAdapter implements Screen {
 
@@ -74,7 +75,7 @@ public class GameOverScreen extends ApplicationAdapter implements Screen {
 	@Override
 	public void show() {
 		
-		if(GameScreen.prefs.getString("sound_option").equals("on")){
+		if(PlayerData.prefs.getString("sound_option").equals("on")){
 			soundOn = true;
 			soundOff = false;
 		}
@@ -123,7 +124,7 @@ public class GameOverScreen extends ApplicationAdapter implements Screen {
 			font36.draw(
 					batch,
 					"NEW HIGH SCORE!!!: "
-							+ GameScreen.prefs.getInteger("highScore"), 150,
+							+ PlayerData.prefs.getInteger("highScore"), 150,
 					300);
 		else
 			font36.draw(batch, "Score: " + score, 150, 300);
@@ -190,12 +191,12 @@ public class GameOverScreen extends ApplicationAdapter implements Screen {
 
 	public static void setCurrency(int val) {
 		int current = getCurrency();
-		GameScreen.prefs.putInteger("currency", (current + val));
-		GameScreen.prefs.flush();
+		PlayerData.prefs.putInteger("currency", (current + val));
+		PlayerData.prefs.flush();
 	}
 
 	public static int getCurrency() {
-		return GameScreen.prefs.getInteger("currency");
+		return PlayerData.prefs.getInteger("currency");
 	}
 
 	public boolean newHighScore() {

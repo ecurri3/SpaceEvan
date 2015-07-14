@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class StorePowerRapidScreen extends ApplicationAdapter implements Screen {
 
@@ -76,7 +77,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 	@Override
 	public void show() {
 		
-		if(GameScreen.prefs.getString("sound_option").equals("on")){
+		if(PlayerData.prefs.getString("sound_option").equals("on")){
 			soundOn = true;
 			soundOff = false;
 		}
@@ -85,8 +86,8 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 			soundOff = true;
 		}
 
-		if (!GameScreen.prefs.contains("currency")) {
-			GameScreen.prefs.putInteger("currency", 0);
+		if (!PlayerData.prefs.contains("currency")) {
+			PlayerData.prefs.putInteger("currency", 0);
 		}
 
 		currency = getCurrency();
@@ -292,7 +293,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpDur") >= 1) {
+						if (PlayerData.prefs.getInteger("rapidUpDur") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -315,7 +316,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpDur") >= 2) {
+						if (PlayerData.prefs.getInteger("rapidUpDur") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -337,7 +338,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpDur") >= 3) {
+						if (PlayerData.prefs.getInteger("rapidUpDur") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "rapidUpDur")){
@@ -358,7 +359,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpDur") >= 4) {
+						if (PlayerData.prefs.getInteger("rapidUpDur") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -380,7 +381,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpDur") >= 5) {
+						if (PlayerData.prefs.getInteger("rapidUpDur") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -402,7 +403,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpReload") >= 1) {
+						if (PlayerData.prefs.getInteger("rapidUpReload") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -425,7 +426,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpReload") >= 2) {
+						if (PlayerData.prefs.getInteger("rapidUpReload") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -447,7 +448,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpReload") >= 3) {
+						if (PlayerData.prefs.getInteger("rapidUpReload") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "rapidUpReload")){
@@ -468,7 +469,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpReload") >= 4) {
+						if (PlayerData.prefs.getInteger("rapidUpReload") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -490,7 +491,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpReload") >= 5) {
+						if (PlayerData.prefs.getInteger("rapidUpReload") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -512,7 +513,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpRicochet") >= 1) {
+						if (PlayerData.prefs.getInteger("rapidUpRicochet") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -535,7 +536,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpRicochet") >= 2) {
+						if (PlayerData.prefs.getInteger("rapidUpRicochet") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -557,7 +558,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpRicochet") >= 3) {
+						if (PlayerData.prefs.getInteger("rapidUpRicochet") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "rapidUpRicochet")){
@@ -578,7 +579,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpRicochet") >= 4) {
+						if (PlayerData.prefs.getInteger("rapidUpRicochet") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -600,7 +601,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("rapidUpRicochet") >= 5) {
+						if (PlayerData.prefs.getInteger("rapidUpRicochet") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -636,17 +637,17 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 	
 	public static void setCurrency(int val) {
 		int current = getCurrency();
-		GameScreen.prefs.putInteger("currency", (current + val));
-		GameScreen.prefs.flush();
+		PlayerData.prefs.putInteger("currency", (current + val));
+		PlayerData.prefs.flush();
 	}
 
 	public static int getCurrency() {
-		return GameScreen.prefs.getInteger("currency");
+		return PlayerData.prefs.getInteger("currency");
 	}
 	
 	public void checkPurchases() {
 
-		switch(GameScreen.prefs.getInteger("rapidUpDur")) {
+		switch(PlayerData.prefs.getInteger("rapidUpDur")) {
 		case 1:
 			batch.draw(purchased.image, 142, 480);
 			break;
@@ -673,7 +674,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 			batch.draw(purchased.image, 142, 944);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("rapidUpReload")) {
+		switch(PlayerData.prefs.getInteger("rapidUpReload")) {
 		case 1:
 			batch.draw(purchased.image, 734, 480);
 			break;
@@ -700,7 +701,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 			batch.draw(purchased.image, 734, 944);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("rapidUpRicochet")) {
+		switch(PlayerData.prefs.getInteger("rapidUpRicochet")) {
 		case 1:
 			batch.draw(purchased.image, 1326, 480);
 			break;
@@ -764,7 +765,7 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 	
 	public boolean havePreReq(int level, String pref){
 		
-		int levelOwned = GameScreen.prefs.getInteger(pref);
+		int levelOwned = PlayerData.prefs.getInteger(pref);
 		int levelReq = level - 1;
 		
 		if(level == 1)
@@ -778,21 +779,21 @@ public class StorePowerRapidScreen extends ApplicationAdapter implements Screen 
 
 	public void purchaseReload(int rapidUpReload, int cost) {
 
-		GameScreen.prefs.putInteger("rapidUpReload", rapidUpReload);
+		PlayerData.prefs.putInteger("rapidUpReload", rapidUpReload);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseDur(int rapidUpDur, int cost) {
 
-		GameScreen.prefs.putInteger("rapidUpDur", rapidUpDur);
+		PlayerData.prefs.putInteger("rapidUpDur", rapidUpDur);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseRicochet(int rapidUpRichochet, int cost) {
 
-		GameScreen.prefs.putInteger("rapidUpRicochet", rapidUpRichochet);
+		PlayerData.prefs.putInteger("rapidUpRicochet", rapidUpRichochet);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}

@@ -30,6 +30,12 @@ public class Assets {
 	public static Texture texture_animback;
 	public static Sprite sprite_animback;
 	
+	public static Texture texture_animback2;
+	public static Sprite sprite_animback2;
+	
+	public static Texture texture_animback3;
+	public static Sprite sprite_animback3;
+	
 	//menu-screen
 	public static Texture texture_menuback;
 	public static Sprite sprite_menuback;
@@ -452,10 +458,20 @@ public class Assets {
 		sprite_back = new Sprite(texture_back);
 		sprite_back.flip(false, true);
 		
-		texture_animback = new Texture(Gdx.files.internal("animated_background_png4.png"));
+		texture_animback = new Texture(Gdx.files.internal("scrollingBack_1.png"));
 		texture_animback.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		sprite_animback = new Sprite(texture_animback);
 		sprite_animback.flip(false, true);
+		
+		texture_animback2 = new Texture(Gdx.files.internal("scrollingBack_2.png"));
+		texture_animback2.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		sprite_animback2 = new Sprite(texture_animback2);
+		sprite_animback2.flip(false, true);
+		
+		texture_animback3 = new Texture(Gdx.files.internal("scrollingBack_3.png"));
+		texture_animback3.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		sprite_animback3 = new Sprite(texture_animback3);
+		sprite_animback3.flip(false, true);
 		
 		texture_store_template_two = new Texture(Gdx.files.internal("store_template_two.png"));
 		texture_store_template_two.setFilter(TextureFilter.Linear, TextureFilter.Linear);

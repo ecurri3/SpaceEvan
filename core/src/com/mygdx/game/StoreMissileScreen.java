@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 
@@ -64,8 +65,8 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 	@Override
 	public void show() {
 
-		if (!GameScreen.prefs.contains("currency")) {
-			GameScreen.prefs.putInteger("currency", 0);
+		if (!PlayerData.prefs.contains("currency")) {
+			PlayerData.prefs.putInteger("currency", 0);
 		}
 
 		currency = getCurrency();
@@ -249,7 +250,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Reload 1
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 450 && touch.y <= 550)) {
-						if (GameScreen.prefs.getInteger("mUpReload") >= 1) {
+						if (PlayerData.prefs.getInteger("mUpReload") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -270,7 +271,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Reload 2
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 565 && touch.y <= 665)) {
-						if (GameScreen.prefs.getInteger("mUpReload") >= 2) {
+						if (PlayerData.prefs.getInteger("mUpReload") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -290,7 +291,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Reload 3
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 680 && touch.y <= 780)) {
-						if (GameScreen.prefs.getInteger("mUpReload") >= 3) {
+						if (PlayerData.prefs.getInteger("mUpReload") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "mUpReload")){
@@ -309,7 +310,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Reload 4
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 795 && touch.y <= 895)) {
-						if (GameScreen.prefs.getInteger("mUpReload") >= 4) {
+						if (PlayerData.prefs.getInteger("mUpReload") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -329,7 +330,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Reload 5
 					if ((touch.x >= 350 && touch.x <= 800)
 							&& (touch.y >= 910 && touch.y <= 1010)) {
-						if (GameScreen.prefs.getInteger("mUpReload") >= 5) {
+						if (PlayerData.prefs.getInteger("mUpReload") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -349,7 +350,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Auto 1
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 450 && touch.y <= 550)) {
-						if (GameScreen.prefs.getInteger("mUpAuto") >= 1) {
+						if (PlayerData.prefs.getInteger("mUpAuto") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -370,7 +371,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Auto 2
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 565 && touch.y <= 665)) {
-						if (GameScreen.prefs.getInteger("mUpAuto") >= 2) {
+						if (PlayerData.prefs.getInteger("mUpAuto") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -390,7 +391,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Auto 3
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 680 && touch.y <= 780)) {
-						if (GameScreen.prefs.getInteger("mUpAuto") >= 3) {
+						if (PlayerData.prefs.getInteger("mUpAuto") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "mUpAuto")){
@@ -409,7 +410,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Auto 4
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 795 && touch.y <= 895)) {
-						if (GameScreen.prefs.getInteger("mUpAuto") >= 4) {
+						if (PlayerData.prefs.getInteger("mUpAuto") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -429,7 +430,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 					// Auto 5
 					if ((touch.x >= 1130 && touch.x <= 1580)
 							&& (touch.y >= 910 && touch.y <= 1010)) {
-						if (GameScreen.prefs.getInteger("mUpAuto") >= 5) {
+						if (PlayerData.prefs.getInteger("mUpAuto") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -469,17 +470,17 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 
 	public static void setCurrency(int val) {
 		int current = getCurrency();
-		GameScreen.prefs.putInteger("currency", (current + val));
-		GameScreen.prefs.flush();
+		PlayerData.prefs.putInteger("currency", (current + val));
+		PlayerData.prefs.flush();
 	}
 
 	public static int getCurrency() {
-		return GameScreen.prefs.getInteger("currency");
+		return PlayerData.prefs.getInteger("currency");
 	}
 
 	public void checkPurchases() {
 
-		switch(GameScreen.prefs.getInteger("mUpReload")) {
+		switch(PlayerData.prefs.getInteger("mUpReload")) {
 		case 1:
 			batch.draw(purchased.image, 340, 450);
 			break;
@@ -506,7 +507,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 			batch.draw(purchased.image, 340, 910);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("mUpAuto")) {
+		switch(PlayerData.prefs.getInteger("mUpAuto")) {
 		case 1:
 			batch.draw(purchased.image, 1130, 450);
 			break;
@@ -545,7 +546,7 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 	
 	public boolean havePreReq(int level, String pref){
 		
-		int levelOwned = GameScreen.prefs.getInteger(pref);
+		int levelOwned = PlayerData.prefs.getInteger(pref);
 		int levelReq = level - 1;
 		
 		if(level == 1)
@@ -559,14 +560,14 @@ public class StoreMissileScreen extends ApplicationAdapter implements Screen {
 
 	public void purchaseReload(int mUpReload, int cost) {
 
-		GameScreen.prefs.putInteger("mUpReload", mUpReload);
+		PlayerData.prefs.putInteger("mUpReload", mUpReload);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseSize(int mUpAuto, int cost) {
 
-		GameScreen.prefs.putInteger("mUpAuto", mUpAuto);
+		PlayerData.prefs.putInteger("mUpAuto", mUpAuto);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}

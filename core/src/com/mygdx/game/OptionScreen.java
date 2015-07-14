@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class OptionScreen extends ApplicationAdapter implements Screen {
 	
@@ -39,7 +40,7 @@ public class OptionScreen extends ApplicationAdapter implements Screen {
 		
 		sleep(300);
 		
-		if(GameScreen.prefs.getString("sound_option").equals("on")){
+		if(PlayerData.prefs.getString("sound_option").equals("on")){
 			soundOn = true;
 			soundOff = false;
 		}
@@ -48,8 +49,8 @@ public class OptionScreen extends ApplicationAdapter implements Screen {
 			soundOff = true;
 		}
 
-		if (!GameScreen.prefs.contains("currency")) {
-			GameScreen.prefs.putInteger("currency", 0);
+		if (!PlayerData.prefs.contains("currency")) {
+			PlayerData.prefs.putInteger("currency", 0);
 		}
 	}
 
@@ -83,22 +84,22 @@ public class OptionScreen extends ApplicationAdapter implements Screen {
 				//SOUND
 				if ((touch.x >= 500 && touch.x <= 950)
 						&& (touch.y >= 380 && touch.y <= 480)) {
-					if(GameScreen.prefs.getString("sound_option").equals("on"))
-						GameScreen.prefs.putString("sound_option", "off");
+					if(PlayerData.prefs.getString("sound_option").equals("on"))
+						PlayerData.prefs.putString("sound_option", "off");
 					else
-						GameScreen.prefs.putString("sound_option", "on");
-					GameScreen.prefs.flush();
+						PlayerData.prefs.putString("sound_option", "on");
+					PlayerData.prefs.flush();
 					playSelectSound();
 					sleep(300);
 				}
 				//CONTROL
 				if ((touch.x >= 500 && touch.x <= 950)
 						&& (touch.y >= 505 && touch.y <= 605)) {
-					if(GameScreen.prefs.getString("control_option").equals("tilt"))
-						GameScreen.prefs.putString("control_option", "buttons");
+					if(PlayerData.prefs.getString("control_option").equals("tilt"))
+						PlayerData.prefs.putString("control_option", "buttons");
 					else
-						GameScreen.prefs.putString("control_option", "tilt");
-					GameScreen.prefs.flush();
+						PlayerData.prefs.putString("control_option", "tilt");
+					PlayerData.prefs.flush();
 					playSelectSound();
 					sleep(300);
 				}
@@ -120,7 +121,7 @@ public class OptionScreen extends ApplicationAdapter implements Screen {
 	
 	public void drawSettings(){
 		
-		if(GameScreen.prefs.getString("sound_option").equals("on")){
+		if(PlayerData.prefs.getString("sound_option").equals("on")){
 			//DISPLAY ON
 			batch.draw(Assets.sprite_option_on, 970, 380);
 		}
@@ -129,7 +130,7 @@ public class OptionScreen extends ApplicationAdapter implements Screen {
 			batch.draw(Assets.sprite_option_off, 970, 380);
 		}
 		
-		if(GameScreen.prefs.getString("control_option").equals("tilt")){
+		if(PlayerData.prefs.getString("control_option").equals("tilt")){
 			//DISPLAY TILT
 			batch.draw(Assets.sprite_option_tilt, 970, 505);
 		}

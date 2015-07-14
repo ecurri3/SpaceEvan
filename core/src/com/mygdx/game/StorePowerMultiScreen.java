@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.gameData.PlayerData;
 
 public class StorePowerMultiScreen extends ApplicationAdapter implements Screen {
 	
@@ -73,7 +74,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 	@Override
 	public void show() {
 		
-		if(GameScreen.prefs.getString("sound_option").equals("on")){
+		if(PlayerData.prefs.getString("sound_option").equals("on")){
 			soundOn = true;
 			soundOff = false;
 		}
@@ -82,8 +83,8 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 			soundOff = true;
 		}
 		
-		if (!GameScreen.prefs.contains("currency")) {
-			GameScreen.prefs.putInteger("currency", 0);
+		if (!PlayerData.prefs.contains("currency")) {
+			PlayerData.prefs.putInteger("currency", 0);
 		}
 
 		currency = getCurrency();
@@ -294,7 +295,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpDur") >= 1) {
+						if (PlayerData.prefs.getInteger("multiUpDur") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -317,7 +318,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpDur") >= 2) {
+						if (PlayerData.prefs.getInteger("multiUpDur") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -339,7 +340,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpDur") >= 3) {
+						if (PlayerData.prefs.getInteger("multiUpDur") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "multiUpDur")){
@@ -360,7 +361,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpDur") >= 4) {
+						if (PlayerData.prefs.getInteger("multiUpDur") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -382,7 +383,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpDur") >= 5) {
+						if (PlayerData.prefs.getInteger("multiUpDur") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -404,7 +405,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpAmount") >= 1) {
+						if (PlayerData.prefs.getInteger("multiUpAmount") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -427,7 +428,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpAmount") >= 2) {
+						if (PlayerData.prefs.getInteger("multiUpAmount") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -449,7 +450,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpAmount") >= 3) {
+						if (PlayerData.prefs.getInteger("multiUpAmount") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "multiUpAmount")){
@@ -470,7 +471,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpAmount") >= 4) {
+						if (PlayerData.prefs.getInteger("multiUpAmount") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -492,7 +493,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpAmount") >= 5) {
+						if (PlayerData.prefs.getInteger("multiUpAmount") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -514,7 +515,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 480 && touch.y <= 580)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpMirror") >= 1) {
+						if (PlayerData.prefs.getInteger("multiUpMirror") >= 1) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -537,7 +538,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 596 && touch.y <= 696)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpMirror") >= 2) {
+						if (PlayerData.prefs.getInteger("multiUpMirror") >= 2) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -559,7 +560,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 712 && touch.y <= 812)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpMirror") >= 3) {
+						if (PlayerData.prefs.getInteger("multiUpMirror") >= 3) {
 							alreadyOwned = true;
 						} else {
 							if(havePreReq(3, "multiUpMirror")){
@@ -580,7 +581,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 828 && touch.y <= 928)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpMirror") >= 4) {
+						if (PlayerData.prefs.getInteger("multiUpMirror") >= 4) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -602,7 +603,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 							&& (touch.y >= 944 && touch.y <= 1044)) {
 						playSelectSound();
 						sleep(200);
-						if (GameScreen.prefs.getInteger("multiUpMirror") >= 5) {
+						if (PlayerData.prefs.getInteger("multiUpMirror") >= 5) {
 							alreadyOwned = true;
 						} else {
 							// CONFIRMATION DISPLAY
@@ -638,7 +639,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 	
 	public void checkPurchases() {
 
-		switch(GameScreen.prefs.getInteger("multiUpDur")) {
+		switch(PlayerData.prefs.getInteger("multiUpDur")) {
 		case 1:
 			batch.draw(purchased.image, 142, 480);
 			break;
@@ -665,7 +666,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 			batch.draw(purchased.image, 142, 944);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("multiUpAmount")) {
+		switch(PlayerData.prefs.getInteger("multiUpAmount")) {
 		case 1:
 			batch.draw(purchased.image, 734, 480);
 			break;
@@ -692,7 +693,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 			batch.draw(purchased.image, 734, 944);
 			break;
 		}
-		switch(GameScreen.prefs.getInteger("multiUpMirror")) {
+		switch(PlayerData.prefs.getInteger("multiUpMirror")) {
 		case 1:
 			batch.draw(purchased.image, 1326, 480);
 			break;
@@ -749,12 +750,12 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 	public static void setCurrency(int val) {
 		
 		int current = getCurrency();
-		GameScreen.prefs.putInteger("currency", (current + val));
-		GameScreen.prefs.flush();
+		PlayerData.prefs.putInteger("currency", (current + val));
+		PlayerData.prefs.flush();
 	}
 
 	public static int getCurrency() {
-		return GameScreen.prefs.getInteger("currency");
+		return PlayerData.prefs.getInteger("currency");
 	}
 	
 	public boolean canAfford(int cost) {
@@ -767,7 +768,7 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 	
 	public boolean havePreReq(int level, String pref){
 		
-		int levelOwned = GameScreen.prefs.getInteger(pref);
+		int levelOwned = PlayerData.prefs.getInteger(pref);
 		int levelReq = level - 1;
 		
 		if(level == 1)
@@ -781,21 +782,21 @@ public class StorePowerMultiScreen extends ApplicationAdapter implements Screen 
 	
 	public void purchaseAmount(int multiUpAmount, int cost) {
 
-		GameScreen.prefs.putInteger("multiUpAmount", multiUpAmount);
+		PlayerData.prefs.putInteger("multiUpAmount", multiUpAmount);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseDur(int multiUpDur, int cost) {
 
-		GameScreen.prefs.putInteger("multiUpDur", multiUpDur);
+		PlayerData.prefs.putInteger("multiUpDur", multiUpDur);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
 	
 	public void purchaseMirror(int multiUpMirror, int cost) {
 
-		GameScreen.prefs.putInteger("multiUpMirror", multiUpMirror);
+		PlayerData.prefs.putInteger("multiUpMirror", multiUpMirror);
 		cost = cost * (-1);
 		setCurrency(cost);
 	}
