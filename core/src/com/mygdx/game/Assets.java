@@ -10,10 +10,13 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public class Assets {
 	
 	public static BitmapFont font12, font16, font20, font24, font36, font48, font72, font96;
+	public static FreeTypeFontParameter parameter;
+	public static FreeTypeFontGenerator gen;
 	
 	//
 	// BACKGROUNDS
@@ -290,46 +293,59 @@ public class Assets {
 	public static void load(){
 		
 		//FONT SIZES
-		FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.internal("OCRASTD.OTF"));
-		font12 = gen.generateFont(12);
+		gen = new FreeTypeFontGenerator(Gdx.files.internal("OCRASTD.OTF"));
+		parameter = new FreeTypeFontParameter();
+		
+		parameter.size = 12;
+		font12 = new BitmapFont();
+		font12 = gen.generateFont(parameter);
 		font12.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		font12.setColor(Color.valueOf("ffff00"));
 		font12.setScale(1, -1);
 		
-		font16 = gen.generateFont(16);
+		parameter.size = 16;
+		font16 = gen.generateFont(parameter);
 		font16.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		font16.setColor(Color.valueOf("ffff00"));
 		font16.setScale(1, -1);
 		
-		font20 = gen.generateFont(20);
+		parameter.size = 20;
+		font20 = gen.generateFont(parameter);
 		font20.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		font20.setColor(Color.valueOf("ffff00"));
 		font20.setScale(1, -1);
 		
-		font24 = gen.generateFont(24);
+		parameter.size = 24;
+		font24 = gen.generateFont(parameter);
 		font24.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		font24.setColor(Color.valueOf("ffff00"));
 		font24.setScale(1, -1);
 		
-		font36 = gen.generateFont(36);
+		parameter.size = 36;
+		font36 = gen.generateFont(parameter);
 		font36.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		font36.setColor(Color.valueOf("ffff00"));
 		font36.setScale(1, -1);
 		
-		font48 = gen.generateFont(48);
+		parameter.size = 48;
+		font48 = gen.generateFont(parameter);
 		font48.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		font48.setColor(Color.valueOf("ffff00"));
 		font48.setScale(1, -1);
 		
-		font72 = gen.generateFont(72);
+		parameter.size = 72;
+		font72 = gen.generateFont(parameter);
 		font72.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		font72.setColor(Color.valueOf("ffff00"));
 		font72.setScale(1, -1);
 		
-		font96 = gen.generateFont(96);
+		parameter.size = 96;
+		font96 = gen.generateFont(parameter);
 		font96.getRegion().getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		font96.setColor(Color.valueOf("ffff00"));
 		font96.setScale(1, -1);
+		
+		gen.dispose();
 		
 		texture_player = new Texture(Gdx.files.internal("player2.0_0normal.png"));
 		player = new Sprite(texture_player);

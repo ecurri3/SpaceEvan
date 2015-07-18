@@ -23,8 +23,14 @@ public class Bullet {
 	}
 	
 	public Bullet(float x, float y, int xupdate, int yupdate, boolean big){
-		image = Assets.bigbullet;
-		bounds = new Rectangle(x + 80, y + 18, 24, 24);
+		if(big){
+			image = Assets.bigbullet;
+			bounds = new Rectangle(x + 80, y + 18, 24, 24);
+		}
+		else{
+			image = Assets.bullet;
+			bounds = new Rectangle(x + 80, y + 18, 8, 8);
+		}
 		xUpdate = xupdate;
 		yUpdate = yupdate;
 	}

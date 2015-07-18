@@ -19,8 +19,14 @@ public class Missile {
 	}
 	
 	public Missile(float x, float y, boolean big) {
-		image = Assets.bigmissile;
-		bounds = new Rectangle(x + 80, y + 18, 12, 72);
+		if(big){
+			image = Assets.bigmissile;
+			bounds = new Rectangle(x + 80, y + 18, 12, 72);
+		}
+		else{
+			image = Assets.missile;
+			bounds = new Rectangle(x + 80, y + 18, 4, 24);
+		}
 	}
 
 	public boolean checkEnd() {

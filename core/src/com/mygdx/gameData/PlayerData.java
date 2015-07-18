@@ -128,26 +128,7 @@ public class PlayerData {
 		}
 
 		// Multi Shot Duration
-		switch (prefs.getInteger("multiUpDur")) {
-		case 1:
-			gameTimers.multiShotDuration = 2587;
-			break;
-		case 2:
-			gameTimers.multiShotDuration = 2925;
-			break;
-		case 3:
-			gameTimers.multiShotDuration = 3262;
-			break;
-		case 4:
-			gameTimers.multiShotDuration = 3600;
-			break;
-		case 5:
-			gameTimers.multiShotDuration = 3937;
-			break;
-		default:
-			gameTimers.multiShotDuration = 2250;
-			break;
-		}
+		gameTimers.multiShotDuration = (int) (2250 * (1 + (0.05 * prefs.getInteger("multiUpDur"))));
 
 		// Multi Shot missile amount
 		if (prefs.getInteger("multiUpAmount") != 0) {

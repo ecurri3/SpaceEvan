@@ -34,6 +34,19 @@ PlayerData playerData;
             }
         });
 		
+		Button health = (Button) findViewById(R.id.health);
+		health.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+            	Intent intent = new Intent(Store.this, StoreCustom.class);
+            	intent.putExtra("pref1",  "hUpRegen");
+            	intent.putExtra("pref2", "hUpHealth");
+            	Gson gson = new Gson();
+            	String json = gson.toJson(storeData.healthData);
+            	intent.putExtra("arrayJSON", json);
+                startActivity(intent);
+            }
+        });
+		
 		Button rapid = (Button) findViewById(R.id.rapid);
 		rapid.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -43,6 +56,20 @@ PlayerData playerData;
             	intent.putExtra("pref3", "rapidUpRicochet");
             	Gson gson = new Gson();
             	String json = gson.toJson(storeData.rapidData);
+            	intent.putExtra("arrayJSON", json);
+                startActivity(intent);
+            }
+        });
+		
+		Button multi = (Button) findViewById(R.id.multi);
+		multi.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+            	Intent intent = new Intent(Store.this, StoreCustom.class);
+            	intent.putExtra("pref1",  "multiUpDur");
+            	intent.putExtra("pref2", "multiUpAmount");
+            	intent.putExtra("pref3", "multiUpMirror");
+            	Gson gson = new Gson();
+            	String json = gson.toJson(storeData.multiData);
             	intent.putExtra("arrayJSON", json);
                 startActivity(intent);
             }

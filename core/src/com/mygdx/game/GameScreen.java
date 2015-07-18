@@ -51,20 +51,28 @@ public class GameScreen implements Screen {
 	String yourHighScore;
 	String yourScoreName;
 
-	// BitmapFont used for drawing text/numbers to screen
-	BitmapFont font;
-
 	private MyGame game;
 	OrthographicCamera camera;
 	SpriteBatch batch;
 	Vector3 touch;
-	
-	//EXPERIMENTAL
+
+	// EXPERIMENTAL
 	private Stage stage;
-	private TextureAtlas buttonsAtlas; //** image of buttons **//
-    private Skin buttonSkin; //** images are used as skins of the button **//
-	private TextButton button; //** the button - the only actor in program **//
-	boolean fireButton = false;
+	private TextureAtlas buttonsAtlas; // ** image of buttons **//
+	private Skin buttonSkin; // ** images are used as skins of the button **//
+	private TextButton fireButton, leftButton, rightButton, pauseButton; // **
+																			// the
+																			// button
+																			// -
+																			// the
+																			// only
+																			// actor
+																			// in
+																			// program
+	// **//
+	boolean fireButtonBool, leftButtonBool, rightButtonBool, pauseButtonBool = false;
+
+	float rotation;
 
 	float stateTime;
 
@@ -99,15 +107,11 @@ public class GameScreen implements Screen {
 	AnimatedBackground anim_background;
 	Health health;
 	ExtraHealth extrahealth;
+
 	/*
 	 * Classes used for power up text in bottom right corner of screen
 	 */
-	PowerTextRapid powertextrapid;
-	PowerTextSpray powertextspray;
-	PowerTextMulti powertextmulti;
-	PowerTextAuto powertextauto;
-	PowerTextSwiftness powertextswiftness;
-	PowerTextBig powertextbig;
+	PowerText powerText;
 
 	// Determines whether the game is paused or active
 	boolean paused;
@@ -159,19 +163,10 @@ public class GameScreen implements Screen {
 		missile = new Missile();
 		health = new Health();
 		extrahealth = new ExtraHealth();
-		powertextrapid = new PowerTextRapid();
-		powertextspray = new PowerTextSpray();
-		powertextmulti = new PowerTextMulti();
-		powertextauto = new PowerTextAuto();
-		powertextswiftness = new PowerTextSwiftness();
-		powertextbig = new PowerTextBig();
+		powerText = new PowerText();
 
 		score = 0;
 		yourScoreName = "0";
-		font = new BitmapFont();
-		font.getRegion().getTexture()
-				.setFilter(TextureFilter.Linear, TextureFilter.Linear);
-		font.setScale(2, -2);
 
 		stateTime = 0F;
 
@@ -207,37 +202,66 @@ public class GameScreen implements Screen {
 
 		playerData.checkPrefs();
 		playerData.checkPowerUpPrefs();
+
+		stage = new Stage(new StretchViewport(1920, 1080)); // ** window is
+															// stage **//
+		stage.clear();
+		Gdx.input.setInputProcessor(stage); // ** stage is responsive **//
+
+		fireButton = userInterface.createButton(stage, "fireButtonDown", "fireButtonUp", "FB_down.png", "FB_up.png", Assets.font12, 1315, 100, 150, 590);
+		fireButton.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				fireButtonBool = true;
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				fireButtonBool = false;
+			}
+		});
+		stage.addActor(fireButton);
 		
-		stage = new Stage(new StretchViewport(1920, 1080));     //** window is stage **//
-        stage.clear();
-        Gdx.input.setInputProcessor(stage); //** stage is responsive **//
-        
-        
-        buttonSkin = new Skin();
-        buttonSkin.add("fireButtonDown", new Texture("FB_down.png"));
-        buttonSkin.add("fireButtonUp", new Texture("FB_up.png"));
-        TextButtonStyle style = new TextButtonStyle(); //** Button properties **//
-        style.font = font;
-        style.up = buttonSkin.getDrawable("fireButtonUp");
-        style.down = buttonSkin.getDrawable("fireButtonDown");
-		button = new TextButton("", style); //** Button text and style **//
-        button.setPosition(1375, 100); //** Button location **//
-        button.setHeight(150); //** Button Height **//
-        button.setWidth(550); //** Button Width **//
-        button.addListener(new InputListener() {
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                    Gdx.app.log("my app", "Pressed"); //** Usually used to start Game, etc. **//
-                    fireButton = true;
-                    return true;
-            }
-            
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                    Gdx.app.log("my app", "Released");
-                    fireButton = false;
-            }
-        });
-        
-        stage.addActor(button);
+		leftButton = userInterface.createButton(stage, "leftButtonDown", "leftButtonUp", "LB_down.png", "LB_up.png", Assets.font12, 20, 105, 140, 290);
+		leftButton.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				leftButtonBool = true;
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				leftButtonBool = false;
+			}
+		});
+		stage.addActor(leftButton);
+		
+		rightButton = userInterface.createButton(stage, "rightButtonDown", "rightButtonUp", "RB_down.png", "RB_up.png", Assets.font12, 310, 105, 140, 290);
+		rightButton.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				rightButtonBool = true;
+				return true;
+			}
+
+			public void touchUp(InputEvent event, float x, float y,
+					int pointer, int button) {
+				rightButtonBool = false;
+			}
+		});
+		stage.addActor(rightButton);
+		
+		pauseButton = userInterface.createButton(stage, "pauseButtonDown", "pauseButtonUp", "PB_down.png", "PB_up.png", Assets.font12, 825, 180, 70, 155);
+		pauseButton.addListener(new InputListener() {
+			public boolean touchDown(InputEvent event, float x, float y,
+					int pointer, int button) {
+				pauseGame();
+				return true;
+			}
+		});
+		stage.addActor(pauseButton);
 	}
 
 	@Override
@@ -293,14 +317,6 @@ public class GameScreen implements Screen {
 			case Desktop:
 				generalUpdate();
 				break;
-			case Applet:
-				break;
-			case HeadlessDesktop:
-				break;
-			case WebGL:
-				break;
-			case iOS:
-				break;
 			default:
 				break;
 			}
@@ -331,21 +347,14 @@ public class GameScreen implements Screen {
 					player.bounds.y - 1080);
 
 		// Player
-		player.draw(batch);
-
-		// Mirror Image Side Ships
-		if (gameData.mirrorTwins) {
-			batch.draw(Assets.missile_twin, player.bounds.x - 150,
-					player.bounds.y + 60);
-			batch.draw(Assets.bullet_twin, player.bounds.x + 210,
-					player.bounds.y + 60);
-		}
+		player.drawR(batch, rotation, gameData);
 
 		drawAll();
 
 		// If game is paused, draw sprites underneath the pause display
 		if (paused) {
 			batch.draw(Assets.pause, 260, 80);
+			displayScore();
 		}
 
 		userInterface.draw(batch);
@@ -354,7 +363,7 @@ public class GameScreen implements Screen {
 		health.draw(batch, gameData);
 
 		// Display Power-Up Text
-		displayPowerText();
+		powerText.draw(batch, gameData);
 		// Display Score
 		displayScore();
 
@@ -386,121 +395,36 @@ public class GameScreen implements Screen {
 
 		checkDurations();
 		checkAcceleration();
-
 		updatePlayerSprite();
+		
+		double factor = 1.0;
+		if(gameData.swiftnessPower)
+			factor = 1.15;
 
 		if (control_tilt) {
 			accelY = Gdx.input.getAccelerometerY();
 			computeMovement(accelY);
 		}
 		if (control_button) {
-			for (int i = 0; i < 4; i++) {
-				if (Gdx.input.isTouched(i)) {
-					touch.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
-					camera.unproject(touch);
-
-					// MOVE LEFT
-					if ((touch.x >= 20 && touch.x <= 308)
-							&& (touch.y >= 915 && touch.y <= 1065)) {
-						if (gameData.swiftnessPower)
-							accelerationX -= 1.75;
-						else
-							accelerationX -= 1.5;
-					}
-					// MOVE RIGHT
-					if ((touch.x >= 309 && touch.x <= 600)
-							&& (touch.y >= 915 && touch.y <= 1066)) {
-						if (gameData.swiftnessPower)
-							accelerationX += 1.75;
-						else
-							accelerationX += 1.5;
-					}
-				}
-			}
+			if(leftButtonBool)
+				accelerationX -= 1.5 * factor;
+			if(rightButtonBool)
+				accelerationX += 1.5 * factor;
 			updatePlayerMovement();
 		}
 
 		if (gameData.autoFire) {
-			if (gameTimers.recentlyFired_auto) {
-			} else {
-
-				if (gameData.shotgun)
-					bulletSound();
-				else
-					missileSound();
-
+			if (!gameTimers.recentlyFired_auto) {
 				gameTimers.startTime_auto = gameTimers.getNanoTime();
-
-				if (gameData.shotgun) {
-					timesFired++;
-					spawnBullets();
-				} else {
-					timesFired++;
-					spawnMissiles();
-				}
-
+				fireProjectile();
 			}
 		}
 
-		if(fireButton)
-			spawnMissiles();
-		for (int i = 0; i < 20; i++) {
-
-			if (Gdx.input.isTouched(i)) {
-				touch.set(Gdx.input.getX(i), Gdx.input.getY(i), 0);
-				camera.unproject(touch);
-				// FIRE BUTTON
-				if (control_tilt) {
-
-					if (((touch.x >= 20 && touch.x <= 600) && (touch.y >= 915 && touch.y <= 1065))
-							|| ((touch.x >= 1320 && touch.x <= 1900) && (touch.y >= 915 && touch.y <= 1065))) {
-						if (gameTimers.recentlyFired) {
-						} else {
-
-							if (gameData.shotgun)
-								bulletSound();
-							else
-								missileSound();
-
-							gameTimers.startTime = gameTimers.getNanoTime();
-
-							if (gameData.shotgun) {
-								timesFired++;
-								spawnBullets();
-							} else {
-								timesFired++;
-								spawnMissiles();
-							}
-						}
-					}
-				}
-				if (control_button) {
-
-					if (((touch.x >= 1320 && touch.x <= 1900) && (touch.y >= 915 && touch.y <= 1065))) {
-						if (gameTimers.recentlyFired) {
-						} else {
-
-							if (gameData.shotgun)
-								bulletSound();
-							else
-								missileSound();
-
-							gameTimers.startTime = gameTimers.getNanoTime();
-
-							if (gameData.shotgun) {
-								timesFired++;
-								spawnBullets();
-							} else {
-								timesFired++;
-								spawnMissiles();
-							}
-						}
-					}
-				}
-				if ((touch.x >= 824 && touch.x <= 979)
-						&& (touch.y >= 906 && touch.y <= 984)) {
-					pauseGame();
-				}
+		if (fireButtonBool) {
+			if (!gameTimers.recentlyFired) {
+				gameTimers.startTime = gameTimers.getNanoTime();
+				gameTimers.recentlyFired = true;
+				fireProjectile();
 			}
 		}
 
@@ -552,374 +476,6 @@ public class GameScreen implements Screen {
 		}
 	}
 
-	public void checkMissileEnemyCollision() {
-
-		for (Missile m : missiles) {
-			for (Enemy e : enemies) {
-				if (Intersector.overlaps(e.Cbounds, m.bounds)) {
-
-					if (e.normal) {
-						score++;
-						yourScoreName = "" + score;
-						explosionSound(m.bounds.x, m.bounds.y);
-						missiles.removeValue(m, false);
-						enemies.removeValue(e, false);
-					}
-					if (e.gold) {
-						score += 15;
-						yourScoreName = "" + score;
-						enemiesKilled++;
-						explosionSound(m.bounds.x, m.bounds.y);
-						missiles.removeValue(m, false);
-						enemies.removeValue(e, false);
-					}
-					if (e.strong) {
-						e.health--;
-						explosionSound(m.bounds.x, m.bounds.y);
-						missiles.removeValue(m, false);
-						if (e.health <= 0) {
-							score += 8;
-							yourScoreName = "" + score;
-							enemiesKilled++;
-							explosionSound(m.bounds.x, m.bounds.y);
-							enemies.removeValue(e, false);
-						}
-					}
-
-					// If ricochet is active
-					if (gameData.rapidFire) {
-						if (gameData.ricochet) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (gameData.ricochetChance * 10))
-								spawnRicochet(m.bounds);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public void checkMissilePowerupCollision() {
-
-		for (Missile m : missiles) {
-			for (Powerup p : powerups) {
-				if (Intersector.overlaps(p.Cbounds, m.bounds)) {
-					// POWERUP
-					if (p.image == Assets.powerup_rapid) {
-						Assets.powerup1.play();
-						gameData.rapidFire = true;
-						gameTimers.rapidFire_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_spray) {
-						Assets.powerup2.play();
-						gameData.shotgun = true;
-						gameTimers.shotgun_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_multi) {
-						Assets.powerup4.play();
-						gameData.multiShot = true;
-						if (gameData.mirror) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (20 * gameData.mirrorChance))
-								gameData.mirrorTwins = true;
-						}
-						gameTimers.multiShot_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_life) {
-						Assets.heal1.play();
-						gameData.player_health++;
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_auto) {
-						Assets.powerup5.play();
-
-						gameData.autoFire = true;
-						gameTimers.autoFire_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_swiftness) {
-						Assets.powerup6.play();
-
-						gameData.swiftnessPower = true;
-						gameTimers.swiftnessPower_start = gameTimers
-								.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_big) {
-						Assets.powerup7.play();
-
-						gameData.bigAmmo = true;
-						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-				}
-			}
-		}
-	}
-
-	public void checkPlayerPowerupCollision() {
-
-		for (Powerup p : powerups) {
-			if (Intersector.overlaps(p.Cbounds, player.bounds)) {
-				// POWERUP
-				if (p.image == Assets.powerup_rapid) {
-					Assets.powerup1.play();
-					gameData.rapidFire = true;
-					gameTimers.rapidFire_start = gameTimers.getNanoTime();
-
-					powerups.removeValue(p, false);
-				}
-				if (p.image == Assets.powerup_spray) {
-					Assets.powerup2.play();
-					gameData.shotgun = true;
-					gameTimers.shotgun_start = gameTimers.getNanoTime();
-
-					powerups.removeValue(p, false);
-				}
-				if (p.image == Assets.powerup_multi) {
-					Assets.powerup4.play();
-					gameData.multiShot = true;
-					gameTimers.multiShot_start = gameTimers.getNanoTime();
-
-					powerups.removeValue(p, false);
-				}
-				if (p.image == Assets.powerup_life) {
-					Assets.heal1.play();
-					gameData.player_health++;
-
-					powerups.removeValue(p, false);
-				}
-				if (p.image == Assets.powerup_auto) {
-					Assets.powerup5.play();
-
-					gameData.autoFire = true;
-					gameTimers.autoFire_start = gameTimers.getNanoTime();
-
-					powerups.removeValue(p, false);
-				}
-				if (p.image == Assets.powerup_swiftness) {
-					Assets.powerup6.play();
-
-					gameData.swiftnessPower = true;
-					gameTimers.swiftnessPower_start = gameTimers.getNanoTime();
-
-					powerups.removeValue(p, false);
-				}
-				if (p.image == Assets.powerup_big) {
-					Assets.powerup7.play();
-
-					gameData.bigAmmo = true;
-					gameTimers.bigAmmo_start = gameTimers.getNanoTime();
-
-					powerups.removeValue(p, false);
-				}
-			}
-		}
-	}
-
-	public void checkBulletEnemyCollision() {
-
-		for (Bullet b : bullets) {
-			for (Enemy e : enemies) {
-				if (Intersector.overlaps(e.Cbounds, b.bounds)) {
-
-					if (e.normal) {
-						score++;
-						yourScoreName = "" + score;
-						enemiesKilled++;
-						explosionSound(b.bounds.x, b.bounds.y);
-						if (gameData.shotgun_pierce) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
-								bullets.removeValue(b, false);
-
-						} else
-							bullets.removeValue(b, false);
-						enemies.removeValue(e, false);
-						if (gameData.landmine) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (10 + (gameData.landmineChance * 5)))
-								landmines.add(new Landmine(b.bounds.x,
-										b.bounds.y));
-						}
-					}
-					if (e.gold) {
-						score += 15;
-						yourScoreName = "" + score;
-						enemiesKilled++;
-						explosionSound(b.bounds.x, b.bounds.y);
-						if (gameData.shotgun_pierce) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
-								bullets.removeValue(b, false);
-						} else
-							bullets.removeValue(b, false);
-						enemies.removeValue(e, false);
-						if (gameData.landmine) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (10 + (gameData.landmineChance * 5)))
-								landmines.add(new Landmine(b.bounds.x,
-										b.bounds.y));
-						}
-					}
-					if (e.strong) {
-						e.health--;
-						explosionSound(b.bounds.x, b.bounds.y);
-						if (gameData.shotgun_pierce) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
-								bullets.removeValue(b, false);
-						} else
-							bullets.removeValue(b, false);
-						if (e.health <= 0) {
-							score += 8;
-							yourScoreName = "" + score;
-							enemiesKilled++;
-							explosionSound(b.bounds.x, b.bounds.y);
-							enemies.removeValue(e, false);
-							if (gameData.landmine) {
-								int chance = rand.nextInt(100) + 1;
-								if (chance <= (10 + (gameData.landmineChance * 5)))
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-							}
-						}
-					}
-
-					if (gameData.rapidFire) {
-						if (gameData.ricochet) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (gameData.ricochetChance * 10))
-								spawnRicochet(b.bounds);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	public void checkBulletPowerupCollision() {
-
-		for (Bullet b : bullets) {
-			for (Powerup p : powerups) {
-				if (Intersector.overlaps(p.Cbounds, b.bounds)) {
-					// POWERUP
-					if (p.image == Assets.powerup_rapid) {
-						Assets.powerup1.play();
-						gameData.rapidFire = true;
-						gameTimers.rapidFire_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_spray) {
-						Assets.powerup2.play();
-						gameData.shotgun = true;
-						gameTimers.shotgun_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_multi) {
-						Assets.powerup4.play();
-						gameData.multiShot = true;
-						gameTimers.multiShot_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_life) {
-						Assets.heal1.play();
-						gameData.player_health++;
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_auto) {
-						Assets.powerup5.play();
-						gameData.autoFire = true;
-						gameTimers.autoFire_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_swiftness) {
-						Assets.powerup6.play();
-						gameData.swiftnessPower = true;
-						gameTimers.swiftnessPower_start = gameTimers
-								.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_big) {
-						Assets.powerup7.play();
-						gameData.bigAmmo = true;
-						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-				}
-			}
-		}
-	}
-
-	public void checkLandmineEnemyCollision() {
-
-		for (Landmine l : landmines) {
-			for (Enemy e : enemies) {
-				if (Intersector.overlaps(e.Cbounds, l.Cbounds)) {
-
-					if (e.normal) {
-						score++;
-						yourScoreName = "" + score;
-						explosionSound(l.Cbounds.x, l.Cbounds.y);
-						landmines.removeValue(l, false);
-						enemies.removeValue(e, false);
-					}
-					if (e.gold) {
-						score += 15;
-						yourScoreName = "" + score;
-						enemiesKilled++;
-						explosionSound(l.Cbounds.x, l.Cbounds.y);
-						landmines.removeValue(l, false);
-						enemies.removeValue(e, false);
-					}
-					if (e.strong) {
-						e.health--;
-						explosionSound(l.Cbounds.x, l.Cbounds.y);
-						landmines.removeValue(l, false);
-						if (e.health <= 0) {
-							score += 8;
-							yourScoreName = "" + score;
-							enemiesKilled++;
-							explosionSound(l.Cbounds.x, l.Cbounds.y);
-							enemies.removeValue(e, false);
-						}
-					}
-				}
-			}
-		}
-	}
-
 	/*
 	 * Checks for all collisions between all sprites
 	 */
@@ -928,33 +484,18 @@ public class GameScreen implements Screen {
 			for (Enemy e : enemies) {
 				if (Intersector.overlaps(e.Cbounds, m.bounds)) {
 
-					if (e.normal) {
-						score++;
-						yourScoreName = "" + score;
-						explosionSound(m.bounds.x, m.bounds.y);
-						missiles.removeValue(m, false);
-						enemies.removeValue(e, false);
-					}
-					if (e.gold) {
-						score += 15;
-						yourScoreName = "" + score;
-						enemiesKilled++;
-						explosionSound(m.bounds.x, m.bounds.y);
-						missiles.removeValue(m, false);
-						enemies.removeValue(e, false);
-					}
-					if (e.strong) {
-						e.health--;
-						explosionSound(m.bounds.x, m.bounds.y);
-						missiles.removeValue(m, false);
-						if (e.health <= 0) {
+					e.health--;
+					if (e.health <= 0) {
+						if (e.normal)
+							score++;
+						if (e.gold)
+							score += 15;
+						if (e.strong)
 							score += 8;
-							yourScoreName = "" + score;
-							enemiesKilled++;
-							explosionSound(m.bounds.x, m.bounds.y);
-							enemies.removeValue(e, false);
-						}
+						enemies.removeValue(e, false);
 					}
+					missiles.removeValue(m, false);
+					explosionSound(m.bounds.x, m.bounds.y);
 
 					// If ricochet is active
 					if (gameData.rapidFire) {
@@ -969,125 +510,13 @@ public class GameScreen implements Screen {
 			for (Powerup p : powerups) {
 				if (Intersector.overlaps(p.Cbounds, m.bounds)) {
 					// POWERUP
-					if (p.image == Assets.powerup_rapid) {
-						Assets.powerup1.play();
-						gameData.rapidFire = true;
-						gameTimers.rapidFire_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_spray) {
-						Assets.powerup2.play();
-						gameData.shotgun = true;
-						gameTimers.shotgun_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_multi) {
-						Assets.powerup4.play();
-						gameData.multiShot = true;
-						if (gameData.mirror) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (20 * gameData.mirrorChance))
-								gameData.mirrorTwins = true;
-						}
-						gameTimers.multiShot_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_life) {
-						Assets.heal1.play();
-						gameData.player_health++;
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_auto) {
-						Assets.powerup5.play();
-
-						gameData.autoFire = true;
-						gameTimers.autoFire_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_swiftness) {
-						Assets.powerup6.play();
-
-						gameData.swiftnessPower = true;
-						gameTimers.swiftnessPower_start = gameTimers
-								.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_big) {
-						Assets.powerup7.play();
-
-						gameData.bigAmmo = true;
-						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
-
-						missiles.removeValue(m, false);
-						powerups.removeValue(p, false);
-					}
+					p.executePowerUp(gameData, gameTimers, p.numType);
+					missiles.removeValue(m, false);
+					powerups.removeValue(p, false);
 				}
 				if (Intersector.overlaps(p.Cbounds, player.bounds)) {
 					// POWERUP
-					if (p.image == Assets.powerup_rapid) {
-						Assets.powerup1.play();
-						gameData.rapidFire = true;
-						gameTimers.rapidFire_start = gameTimers.getNanoTime();
-
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_spray) {
-						Assets.powerup2.play();
-						gameData.shotgun = true;
-						gameTimers.shotgun_start = gameTimers.getNanoTime();
-
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_multi) {
-						Assets.powerup4.play();
-						gameData.multiShot = true;
-						gameTimers.multiShot_start = gameTimers.getNanoTime();
-
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_life) {
-						Assets.heal1.play();
-						gameData.player_health++;
-
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_auto) {
-						Assets.powerup5.play();
-
-						gameData.autoFire = true;
-						gameTimers.autoFire_start = gameTimers.getNanoTime();
-
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_swiftness) {
-						Assets.powerup6.play();
-
-						gameData.swiftnessPower = true;
-						gameTimers.swiftnessPower_start = gameTimers
-								.getNanoTime();
-
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_big) {
-						Assets.powerup7.play();
-
-						gameData.bigAmmo = true;
-						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
-
-						powerups.removeValue(p, false);
-					}
+					p.executePowerUp(gameData, gameTimers, p.numType);
 				}
 			}
 		}
@@ -1095,67 +524,30 @@ public class GameScreen implements Screen {
 			for (Enemy e : enemies) {
 				if (Intersector.overlaps(e.Cbounds, b.bounds)) {
 
-					if (e.normal) {
-						score++;
-						yourScoreName = "" + score;
-						enemiesKilled++;
-						explosionSound(b.bounds.x, b.bounds.y);
-						if (gameData.shotgun_pierce) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
-								bullets.removeValue(b, false);
-
-						} else
-							bullets.removeValue(b, false);
-						enemies.removeValue(e, false);
-						if (gameData.landmine) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (10 + (gameData.landmineChance * 5)))
-								landmines.add(new Landmine(b.bounds.x,
-										b.bounds.y));
-						}
-					}
-					if (e.gold) {
-						score += 15;
-						yourScoreName = "" + score;
-						enemiesKilled++;
-						explosionSound(b.bounds.x, b.bounds.y);
-						if (gameData.shotgun_pierce) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
-								bullets.removeValue(b, false);
-						} else
-							bullets.removeValue(b, false);
-						enemies.removeValue(e, false);
-						if (gameData.landmine) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (10 + (gameData.landmineChance * 5)))
-								landmines.add(new Landmine(b.bounds.x,
-										b.bounds.y));
-						}
-					}
-					if (e.strong) {
-						e.health--;
-						explosionSound(b.bounds.x, b.bounds.y);
-						if (gameData.shotgun_pierce) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
-								bullets.removeValue(b, false);
-						} else
-							bullets.removeValue(b, false);
-						if (e.health <= 0) {
+					e.health--;
+					if (e.health <= 0) {
+						if (e.normal)
+							score++;
+						if (e.gold)
+							score += 15;
+						if (e.strong)
 							score += 8;
-							yourScoreName = "" + score;
-							enemiesKilled++;
-							explosionSound(b.bounds.x, b.bounds.y);
-							enemies.removeValue(e, false);
-							if (gameData.landmine) {
-								int chance = rand.nextInt(100) + 1;
-								if (chance <= (10 + (gameData.landmineChance * 5)))
-									landmines.add(new Landmine(b.bounds.x,
-											b.bounds.y));
-							}
-						}
+						enemies.removeValue(e, false);
+					}
+					explosionSound(b.bounds.x, b.bounds.y);
+
+					if (gameData.shotgun_pierce) {
+						int chance = rand.nextInt(100) + 1;
+						if (chance <= (100 - (20 * gameData.shotgun_pierce_chance)))
+							bullets.removeValue(b, false);
+
+					} else
+						bullets.removeValue(b, false);
+
+					if (gameData.landmine) {
+						int chance = rand.nextInt(100) + 1;
+						if (chance <= (10 + (gameData.landmineChance * 5)))
+							landmines.add(new Landmine(b.bounds.x, b.bounds.y));
 					}
 
 					if (gameData.rapidFire) {
@@ -1170,62 +562,9 @@ public class GameScreen implements Screen {
 			for (Powerup p : powerups) {
 				if (Intersector.overlaps(p.Cbounds, b.bounds)) {
 					// POWERUP
-					if (p.image == Assets.powerup_rapid) {
-						Assets.powerup1.play();
-						gameData.rapidFire = true;
-						gameTimers.rapidFire_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_spray) {
-						Assets.powerup2.play();
-						gameData.shotgun = true;
-						gameTimers.shotgun_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_multi) {
-						Assets.powerup4.play();
-						gameData.multiShot = true;
-						gameTimers.multiShot_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_life) {
-						Assets.heal1.play();
-						gameData.player_health++;
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_auto) {
-						Assets.powerup5.play();
-						gameData.autoFire = true;
-						gameTimers.autoFire_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_swiftness) {
-						Assets.powerup6.play();
-						gameData.swiftnessPower = true;
-						gameTimers.swiftnessPower_start = gameTimers
-								.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
-					if (p.image == Assets.powerup_big) {
-						Assets.powerup7.play();
-						gameData.bigAmmo = true;
-						gameTimers.bigAmmo_start = gameTimers.getNanoTime();
-
-						bullets.removeValue(b, false);
-						powerups.removeValue(p, false);
-					}
+					p.executePowerUp(gameData, gameTimers, p.numType);
+					bullets.removeValue(b, false);
+					powerups.removeValue(p, false);
 				}
 			}
 		}
@@ -1233,33 +572,19 @@ public class GameScreen implements Screen {
 			for (Enemy e : enemies) {
 				if (Intersector.overlaps(e.Cbounds, l.Cbounds)) {
 
-					if (e.normal) {
-						score++;
-						yourScoreName = "" + score;
-						explosionSound(l.Cbounds.x, l.Cbounds.y);
-						landmines.removeValue(l, false);
-						enemies.removeValue(e, false);
-					}
-					if (e.gold) {
-						score += 15;
-						yourScoreName = "" + score;
-						enemiesKilled++;
-						explosionSound(l.Cbounds.x, l.Cbounds.y);
-						landmines.removeValue(l, false);
-						enemies.removeValue(e, false);
-					}
-					if (e.strong) {
-						e.health--;
-						explosionSound(l.Cbounds.x, l.Cbounds.y);
-						landmines.removeValue(l, false);
-						if (e.health <= 0) {
+					e.health--;
+					if (e.health <= 0) {
+						if (e.normal)
+							score++;
+						if (e.gold)
+							score += 15;
+						if (e.strong)
 							score += 8;
-							yourScoreName = "" + score;
-							enemiesKilled++;
-							explosionSound(l.Cbounds.x, l.Cbounds.y);
-							enemies.removeValue(e, false);
-						}
+						enemies.removeValue(e, false);
 					}
+					explosionSound(l.Cbounds.x, l.Cbounds.y);
+					landmines.removeValue(l, false);
+
 				}
 			}
 		}
@@ -1269,13 +594,9 @@ public class GameScreen implements Screen {
 	 * Updates movement of missiles
 	 */
 	public void missileUpdate(Missile missile) {
-		missile.bounds.y -= 15;
-
-		// batch.begin();
+		missile.bounds.y -= 25;
 
 		batch.draw(missile.image, missile.bounds.x, missile.bounds.y);
-
-		// batch.end();
 	}
 
 	/*
@@ -1285,18 +606,13 @@ public class GameScreen implements Screen {
 		bullet.bounds.y -= bullet.yUpdate;
 		bullet.bounds.x -= bullet.xUpdate;
 
-		// batch.begin();
-
 		batch.draw(bullet.image, bullet.bounds.x, bullet.bounds.y);
-
-		// batch.end();
 	}
 
 	/*
 	 * Updates movement of enemies
 	 */
 	public void enemyUpdate(Enemy enemy) {
-		// batch.begin();
 
 		if (enemy.normal) {
 			enemy.Cbounds.y += 3.25;
@@ -1313,8 +629,6 @@ public class GameScreen implements Screen {
 			batch.draw(enemy.image, enemy.Cbounds.x - (float) 100,
 					enemy.Cbounds.y - (float) 100);
 		}
-
-		// batch.end();
 	}
 
 	/*
@@ -1323,21 +637,14 @@ public class GameScreen implements Screen {
 	public void powerUpdate(Powerup powerup) {
 		powerup.Cbounds.y += 2.5;
 
-		// batch.begin();
-
 		batch.draw(powerup.image, powerup.Cbounds.x - 75,
 				powerup.Cbounds.y - 85);
-
-		// batch.end();
 	}
 
 	public void landmineUpdate(Landmine landmine) {
-		// batch.begin();
 
 		batch.draw(landmine.image, landmine.Cbounds.x - 30,
 				landmine.Cbounds.y - 30);
-
-		// batch.end();
 	}
 
 	@Override
@@ -1444,45 +751,7 @@ public class GameScreen implements Screen {
 	 * Updates player health with the correct image
 	 */
 	public void updateHealthBar() {
-
-		if (gameData.player_health >= 10)
-			gameData.player_health = 10;
-		switch (gameData.player_health) {
-		case 10:
-			health.extraHealth = Assets.extrahealth_5;
-			health.health = Assets.health_5;
-			break;
-		case 9:
-			health.extraHealth = Assets.extrahealth_4;
-			health.health = Assets.health_5;
-			break;
-		case 8:
-			health.extraHealth = Assets.extrahealth_3;
-			health.health = Assets.health_5;
-			break;
-		case 7:
-			health.extraHealth = Assets.extrahealth_2;
-			health.health = Assets.health_5;
-			break;
-		case 6:
-			health.extraHealth = Assets.extrahealth_1;
-			health.health = Assets.health_5;
-		case 5:
-			health.health = Assets.health_5;
-			break;
-		case 4:
-			health.health = Assets.health_4;
-			break;
-		case 3:
-			health.health = Assets.health_3;
-			break;
-		case 2:
-			health.health = Assets.health_2;
-			break;
-		case 1:
-			health.health = Assets.health_1;
-			break;
-		}
+		health.setHealth(gameData.player_health, gameData);
 	}
 
 	/*
@@ -1491,33 +760,7 @@ public class GameScreen implements Screen {
 	 * Meant to give a turning animation for the player
 	 */
 	public void updatePlayerSprite() {
-
-		if (accelerationX >= 0 && accelerationX <= 2)
-			player.image = Assets.sprite_0normal;
-		if (accelerationX <= 0 && accelerationX >= -2)
-			player.image = Assets.sprite_0normal;
-
-		else if (accelerationX < -2 && accelerationX >= -4)
-			player.image = Assets.sprite_9left;
-		else if (accelerationX < -4 && accelerationX >= -6)
-			player.image = Assets.sprite_18left;
-		else if (accelerationX < -6 && accelerationX >= -8)
-			player.image = Assets.sprite_27left;
-		else if (accelerationX < -8 && accelerationX >= -10)
-			player.image = Assets.sprite_36left;
-		else if (accelerationX < -10)
-			player.image = Assets.sprite_45left;
-
-		else if (accelerationX > 2 && accelerationX <= 4)
-			player.image = Assets.sprite_9right;
-		else if (accelerationX > 4 && accelerationX <= 6)
-			player.image = Assets.sprite_18right;
-		else if (accelerationX > 6 && accelerationX <= 8)
-			player.image = Assets.sprite_27right;
-		else if (accelerationX > 8 && accelerationX <= 10)
-			player.image = Assets.sprite_36right;
-		else if (accelerationX > 10)
-			player.image = Assets.sprite_45right;
+		rotation = (accelerationX) * 4.5f;
 	}
 
 	// Receives an integer and maps it to the String highScore in prefs
@@ -1591,30 +834,13 @@ public class GameScreen implements Screen {
 		/*
 		 * Adjust the spawn rate of enemies as the score gets higher
 		 */
-		if (score < 50)
-			enemySpawnRate = 150;
-		else if (score >= 50 && score < 100)
-			enemySpawnRate = 130;
-		else if (score >= 100 && score < 125)
-			enemySpawnRate = 110;
-		else if (score >= 125 && score < 150)
-			enemySpawnRate = 100;
-		else if (score >= 150 && score < 200)
-			enemySpawnRate = 95;
-		else if (score >= 200 && score < 250)
-			enemySpawnRate = 90;
-		else if (score >= 250 && score < 300)
-			enemySpawnRate = 85;
-		else if (score >= 300 && score < 350)
-			enemySpawnRate = 80;
-		else if (score >= 350 && score < 400)
-			enemySpawnRate = 75;
-		else if (score >= 400 && score < 450)
-			enemySpawnRate = 70;
-		else if (score >= 450 && score < 500)
-			enemySpawnRate = 65;
-		else if (score >= 500)
-			enemySpawnRate = 60;
+		enemySpawnRate = 200 - ((score / 25) * 5);
+		if (enemySpawnRate < 50)
+			enemySpawnRate = 50;
+
+		// USE THIS MAYBE
+		// enemySpawnRate = ((200 - ((score/25)*5)) >= 50) ? 200 -
+		// ((score/25)*5) : 50;
 
 		if (gameData.healthRegen) {
 			gameTimers.healthRegen_end = gameTimers.getNanoTime();
@@ -1735,32 +961,23 @@ public class GameScreen implements Screen {
 	 * This function handles all input for the Desktop version of the game
 	 */
 	public void checkDesktopInput() {
+		
+		double factor = 1.0;
+		if(gameData.swiftnessPower)
+			factor = 1.5;
 
 		if (Gdx.input.isKeyPressed(Keys.A)) {
-			// player.bounds.x -= accelerationX;
-			accelerationX -= 1.5;
+			accelerationX -= 1.5 * factor;
 		}
 		if (Gdx.input.isKeyPressed(Keys.D)) {
-			// player.bounds.x += accelerationX;
-			accelerationX += 1.5;
+			accelerationX += 1.5 * factor;
 		}
 
 		if (gameData.autoFire) {
 			if (gameTimers.recentlyFired_auto) {
 			} else {
-
-				if (gameData.shotgun)
-					bulletSound();
-				else
-					missileSound();
-
 				gameTimers.startTime_auto = gameTimers.getNanoTime();
-
-				if (gameData.shotgun) {
-					spawnBullets();
-				} else {
-					spawnMissiles();
-				}
+				fireProjectile();
 
 			}
 		}
@@ -1768,19 +985,9 @@ public class GameScreen implements Screen {
 				|| Gdx.input.isButtonPressed(Buttons.LEFT)) {
 			if (gameTimers.recentlyFired) {
 			} else {
-
-				if (gameData.shotgun)
-					bulletSound();
-				else
-					missileSound();
-
 				gameTimers.startTime = gameTimers.getNanoTime();
-
-				if (gameData.shotgun) {
-					spawnBullets();
-				} else {
-					spawnMissiles();
-				}
+				gameTimers.recentlyFired = true;
+				fireProjectile();
 
 			}
 		}
@@ -1799,19 +1006,39 @@ public class GameScreen implements Screen {
 	 */
 	public void checkAcceleration() {
 
-		if (accelerationX > 0.0) {
-			accelRight = true;
-			accelLeft = false;
-		}
-		if (accelerationX < 0.0) {
-			accelRight = false;
-			accelLeft = true;
-		}
-		if (accelerationX == 0.0) {
-			accelRight = false;
-			accelLeft = false;
-		}
+		accelRight = false;
+		accelLeft = false;
 
+		if (accelerationX > 0.0)
+			accelRight = true;
+		else if (accelerationX < 0.0)
+			accelLeft = true;
+
+	}
+
+	public void fireProjectile() {
+
+		timesFired++;
+		if (gameData.shotgun)
+			spawnBullets();
+		else
+			spawnMissiles();
+
+		if (gameData.mirrorTwins) {
+			missiles.add(new Missile(player.bounds.x - 160,
+					player.bounds.y + 80, false));
+			missiles.add(new Missile(player.bounds.x - 200,
+					player.bounds.y + 80, false));
+			missiles.add(new Missile(player.bounds.x - 180,
+					player.bounds.y + 60, false));
+
+			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
+					-6, 20, false));
+			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 63,
+					0, 30, false));
+			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
+					6, 20, false));
+		}
 	}
 
 	/*
@@ -1820,178 +1047,27 @@ public class GameScreen implements Screen {
 	 */
 	public void spawnBullets() {
 
-		if (gameData.bigAmmo) {
-			if (gameData.multiShot) {
-				if (gameData.multi_extra) {
-					switch (gameData.multi_extra_missiles) {
-					case 4:
-						bullets.add(new Bullet(player.bounds.x + 13,
-								player.bounds.y + 32, -5, 7, true));
-						break;
-					case 5:
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -5, 7, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -1, 13, true));
-						break;
-					case 6:
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -5, 7, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -1, 13, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 1, 13, true));
-						break;
-					case 7:
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -5, 7, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -1, 13, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 1, 13, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 5, 7, true));
-						break;
-					case 8:
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -5, 7, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -1, 13, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 1, 13, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 5, 7, true));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 5, 8, true));
-						break;
-					}
-				}
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, -6, 5, true));
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, -3, 10, true));
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, 0, 15, true));
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, 3, 10, true));
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, 6, 5, true));
+		// check for big ammo, if true, use big bullets
+		// spawn 3 bullets
+		// check for multi shot, if true, spawn 2 more
+		bulletSound();
+		boolean bigBullets = false;
 
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, -6, 5, true));
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, -3, 10, true));
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, 0, 15, true));
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, 3, 10, true));
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, 6, 5, true));
-			}
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, -6, 5,
-					true));
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, -3, 10,
-					true));
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 0, 15,
-					true));
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 3, 10,
-					true));
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 6, 5, true));
-		} else {
+		if (gameData.bigAmmo)
+			bigBullets = true;
 
-			if (gameData.multiShot) {
-				if (gameData.multi_extra) {
-					switch (gameData.multi_extra_missiles) {
-					case 4:
-						bullets.add(new Bullet(player.bounds.x + 13,
-								player.bounds.y + 32, -5, 7));
-						break;
-					case 5:
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -5, 7));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -1, 13));
-						break;
-					case 6:
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -5, 7));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -1, 13));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 1, 13));
-						break;
-					case 7:
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -5, 7));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -1, 13));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 1, 13));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 5, 7));
-						break;
-					case 8:
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -5, 7));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, -1, 13));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 1, 13));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 5, 7));
-						bullets.add(new Bullet(player.bounds.x + 27,
-								player.bounds.y + 32, 5, 8));
-						break;
-					}
-				}
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, -6, 5));
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, -3, 10));
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, 0, 15));
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, 3, 10));
-				bullets.add(new Bullet(player.bounds.x + 27,
-						player.bounds.y + 32, 6, 5));
+		bullets.add(new Bullet(player.bounds.x, player.bounds.y, -6, 20,
+				bigBullets));
+		bullets.add(new Bullet(player.bounds.x, player.bounds.y, 0, 30,
+				bigBullets));
+		bullets.add(new Bullet(player.bounds.x, player.bounds.y, 6, 20,
+				bigBullets));
 
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, -6, 5));
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, -3, 10));
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, 0, 15));
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, 3, 10));
-				bullets.add(new Bullet(player.bounds.x - 27,
-						player.bounds.y + 32, 6, 5));
-			}
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, -6, 5));
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, -3, 10));
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 0, 15));
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 3, 10));
-			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 6, 5));
-		}
-
-		if (gameData.mirrorTwins) {
-
-			missiles.add(new Missile(player.bounds.x - 160,
-					player.bounds.y + 80));
-			missiles.add(new Missile(player.bounds.x - 200,
-					player.bounds.y + 80));
-			missiles.add(new Missile(player.bounds.x - 180,
-					player.bounds.y + 60));
-
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
-					-6, 5));
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
-					-3, 10));
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 63,
-					0, 15));
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
-					3, 10));
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
-					6, 5));
+		if (gameData.multiShot) {
+			bullets.add(new Bullet(player.bounds.x, player.bounds.y, -12, 10,
+					bigBullets));
+			bullets.add(new Bullet(player.bounds.x, player.bounds.y, 12, 10,
+					bigBullets));
 		}
 	}
 
@@ -2002,132 +1078,48 @@ public class GameScreen implements Screen {
 	 */
 	public void spawnMissiles() {
 
-		if (gameData.bigAmmo) {
-			if (gameData.multiShot) {
-				if (gameData.multi_extra) {
-					switch (gameData.multi_extra_missiles) {
+		missileSound();
+		boolean bigMissile = false;
+
+		if (gameData.bigAmmo)
+			bigMissile = true;
+
+		missiles.add(new Missile(player.bounds.x, player.bounds.y, bigMissile));
+
+		if (gameData.multiShot) {
+
+			missiles.add(new Missile(player.bounds.x + 27,
+					player.bounds.y + 32, bigMissile));
+			missiles.add(new Missile(player.bounds.x - 27,
+					player.bounds.y + 32, bigMissile));
+
+			if (gameData.multi_extra) {
+
+				for (int i = 4; i < gameData.multi_extra_missiles; i++) {
+					switch (i) {
 					case 4:
 						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 32, true));
+								player.bounds.y + 32, bigMissile));
 						break;
 					case 5:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 32, true));
 						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 32, true));
+								player.bounds.y + 32, bigMissile));
 						break;
 					case 6:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 32, true));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 32, true));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 32, true));
+						missiles.add(new Missile(player.bounds.x + 50,
+								player.bounds.y + 32, bigMissile));
 						break;
 					case 7:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 32, true));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 32, true));
-						missiles.add(new Missile(player.bounds.x + 50,
-								player.bounds.y + 32, true));
 						missiles.add(new Missile(player.bounds.x - 63,
-								player.bounds.y + 32, true));
+								player.bounds.y + 32, bigMissile));
 						break;
 					case 8:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 32, true));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 32, true));
-						missiles.add(new Missile(player.bounds.x + 50,
-								player.bounds.y + 32, true));
-						missiles.add(new Missile(player.bounds.x - 63,
-								player.bounds.y + 32, true));
-						missiles.add(new Missile(player.bounds.x - 63,
-								player.bounds.y + 32, true));
+						missiles.add(new Missile(player.bounds.x + 63,
+								player.bounds.y + 32, bigMissile));
 						break;
 					}
 				}
-				missiles.add(new Missile(player.bounds.x + 27,
-						player.bounds.y + 32, true));
-				missiles.add(new Missile(player.bounds.x - 27,
-						player.bounds.y + 32, true));
 			}
-			missiles.add(new Missile(player.bounds.x, player.bounds.y, true));
-		} else {
-
-			if (gameData.multiShot) {
-				if (gameData.multi_extra) {
-					switch (gameData.multi_extra_missiles) {
-					case 4:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 18));
-						break;
-					case 5:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 18));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 62));
-						break;
-					case 6:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 18));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 62));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 62));
-						break;
-					case 7:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 18));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 62));
-						missiles.add(new Missile(player.bounds.x + 50,
-								player.bounds.y + 62));
-						missiles.add(new Missile(player.bounds.x - 63,
-								player.bounds.y + 95));
-						break;
-					case 8:
-						missiles.add(new Missile(player.bounds.x + 13,
-								player.bounds.y + 18));
-						missiles.add(new Missile(player.bounds.x - 50,
-								player.bounds.y + 62));
-						missiles.add(new Missile(player.bounds.x + 50,
-								player.bounds.y + 62));
-						missiles.add(new Missile(player.bounds.x - 63,
-								player.bounds.y + 95));
-						missiles.add(new Missile(player.bounds.x - 63,
-								player.bounds.y + 95));
-						break;
-					}
-				}
-				missiles.add(new Missile(player.bounds.x + 27,
-						player.bounds.y + 30));
-				missiles.add(new Missile(player.bounds.x - 27,
-						player.bounds.y + 30));
-			}
-			missiles.add(new Missile(player.bounds.x, player.bounds.y));
-		}
-
-		if (gameData.mirrorTwins) {
-
-			missiles.add(new Missile(player.bounds.x - 160,
-					player.bounds.y + 80));
-			missiles.add(new Missile(player.bounds.x - 200,
-					player.bounds.y + 80));
-			missiles.add(new Missile(player.bounds.x - 180,
-					player.bounds.y + 60));
-
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
-					-6, 5));
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
-					-3, 10));
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 63,
-					0, 15));
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
-					3, 10));
-			bullets.add(new Bullet(player.bounds.x + 180, player.bounds.y + 70,
-					6, 5));
 		}
 	}
 
@@ -2136,25 +1128,25 @@ public class GameScreen implements Screen {
 	 */
 	public void spawnRicochet(Rectangle bounds) {
 
-		bullets.add(new Bullet(bounds.x, bounds.y, -8, -8));
-		bullets.add(new Bullet(bounds.x, bounds.y, 8, -8));
-		bullets.add(new Bullet(bounds.x, bounds.y, 8, 8));
-		bullets.add(new Bullet(bounds.x, bounds.y, -8, 8));
+		bullets.add(new Bullet(bounds.x, bounds.y, -16, -16));
+		bullets.add(new Bullet(bounds.x, bounds.y, 16, -16));
+		bullets.add(new Bullet(bounds.x, bounds.y, 16, 16));
+		bullets.add(new Bullet(bounds.x, bounds.y, -16, 16));
 
-		bullets.add(new Bullet(bounds.x, bounds.y, 0, -12));
-		bullets.add(new Bullet(bounds.x, bounds.y, 0, -12));
-		bullets.add(new Bullet(bounds.x, bounds.y, 12, 0));
-		bullets.add(new Bullet(bounds.x, bounds.y, -12, 0));
+		bullets.add(new Bullet(bounds.x, bounds.y, 0, -24));
+		bullets.add(new Bullet(bounds.x, bounds.y, 0, -24));
+		bullets.add(new Bullet(bounds.x, bounds.y, 24, 0));
+		bullets.add(new Bullet(bounds.x, bounds.y, -24, 0));
 
-		bullets.add(new Bullet(bounds.x, bounds.y, -4, -10));
-		bullets.add(new Bullet(bounds.x, bounds.y, 4, -10));
-		bullets.add(new Bullet(bounds.x, bounds.y, 10, 4));
-		bullets.add(new Bullet(bounds.x, bounds.y, -10, 4));
+		bullets.add(new Bullet(bounds.x, bounds.y, -8, -20));
+		bullets.add(new Bullet(bounds.x, bounds.y, 8, -20));
+		bullets.add(new Bullet(bounds.x, bounds.y, 20, 8));
+		bullets.add(new Bullet(bounds.x, bounds.y, -20, 8));
 
-		bullets.add(new Bullet(bounds.x, bounds.y, -10, -4));
-		bullets.add(new Bullet(bounds.x, bounds.y, 10, -4));
-		bullets.add(new Bullet(bounds.x, bounds.y, 4, 10));
-		bullets.add(new Bullet(bounds.x, bounds.y, -4, 10));
+		bullets.add(new Bullet(bounds.x, bounds.y, -20, -8));
+		bullets.add(new Bullet(bounds.x, bounds.y, 20, -8));
+		bullets.add(new Bullet(bounds.x, bounds.y, 8, 20));
+		bullets.add(new Bullet(bounds.x, bounds.y, -8, 20));
 	}
 
 	/*
@@ -2214,41 +1206,17 @@ public class GameScreen implements Screen {
 	}
 
 	/*
-	 * This function is responsible for notifying the player of what powerups
-	 * they currently possess In the UI, it is located next to the right firing
-	 * button and can currently hold 6 powerup messages
-	 */
-	public void displayPowerText() {
-
-		if (gameData.rapidFire)
-			batch.draw(powertextrapid.image, powertextrapid.bounds.x,
-					powertextrapid.bounds.y);
-		if (gameData.shotgun)
-			batch.draw(powertextspray.image, powertextspray.bounds.x,
-					powertextspray.bounds.y);
-		if (gameData.multiShot)
-			batch.draw(powertextmulti.image, powertextmulti.bounds.x,
-					powertextmulti.bounds.y);
-		if (gameData.autoFire)
-			batch.draw(powertextauto.image, powertextauto.bounds.x,
-					powertextauto.bounds.y);
-		if (gameData.swiftnessPower)
-			batch.draw(powertextswiftness.image, powertextswiftness.bounds.x,
-					powertextswiftness.bounds.y);
-		if (gameData.bigAmmo)
-			batch.draw(powertextbig.image, powertextbig.bounds.x,
-					powertextbig.bounds.y);
-	}
-
-	/*
 	 * Displays both the score of the current session and the overall highscore
 	 * the player has achieved
 	 */
 	public void displayScore() {
 
+		yourScoreName = "" + score;
 		Assets.font24.setColor(Color.WHITE);
+		Assets.font36.setColor(Color.WHITE);
 		Assets.font24.draw(batch, yourScoreName, 693, 910);
-		Assets.font24.draw(batch, yourHighScore, 743, 940);
+		Assets.font36.draw(batch, yourHighScore, 743, 940);
+		Assets.font48.draw(batch, "poop", 2000, 325);
 	}
 
 	/*
@@ -2277,18 +1245,14 @@ public class GameScreen implements Screen {
 	public void updatePlayerMovement() {
 
 		player.bounds.x += accelerationX;
+		double factor = 1;
+		if (gameData.swiftnessPower)
+			factor = 1.50;
 
-		if (gameData.swiftnessPower) {
-			if (accelRight)
-				accelerationX -= 0.33;
-			if (accelLeft)
-				accelerationX += 0.33;
-		} else {
-			if (accelRight)
-				accelerationX -= 0.5;
-			if (accelLeft)
-				accelerationX += 0.5;
-		}
+		if (accelRight)
+			accelerationX -= 0.33 * factor;
+		if (accelLeft)
+			accelerationX += 0.33 * factor;
 	}
 
 	/*
@@ -2300,91 +1264,7 @@ public class GameScreen implements Screen {
 		if (gameData.swiftnessPower)
 			factor = 1.25;
 
-		if (Y > 0 && Y <= 0.25) {
-			player.bounds.x += 0.9 * factor;
-		}
-		if (Y > 0.25 && Y <= 0.50) {
-			player.bounds.x += 1.9 * factor;
-		}
-		if (Y > 0.50 && Y <= 0.75) {
-			player.bounds.x += 2.9 * factor;
-		}
-		if (Y > 0.75 && Y <= 1.00) {
-			player.bounds.x += 3.9 * factor;
-		}
-		if (Y > 1.00 && Y <= 1.25) {
-			player.bounds.x += 4.9 * factor;
-		}
-		if (Y > 1.25 && Y <= 1.50) {
-			player.bounds.x += 5.9 * factor;
-		}
-		if (Y > 1.50 && Y <= 1.75) {
-			player.bounds.x += 6.4 * factor;
-		}
-		if (Y > 1.75 && Y <= 2.00) {
-			player.bounds.x += 6.9 * factor;
-		}
-		if (Y > 2.00 && Y <= 2.25) {
-			player.bounds.x += 7.4 * factor;
-		}
-		if (Y > 2.25 && Y <= 2.50) {
-			player.bounds.x += 7.9 * factor;
-		}
-		if (Y > 2.50 && Y <= 2.75) {
-			player.bounds.x += 8.4 * factor;
-		}
-		if (Y > 2.75 && Y <= 3.00) {
-			player.bounds.x += 15.9 * factor;
-		}
-		if (Y > 3.00 && Y <= 3.25) {
-			player.bounds.x += 18.9 * factor;
-		}
-		if (Y > 3.25) {
-			player.bounds.x += 25.9 * factor;
-		}
-
-		if (Y < 0 && Y >= -0.25) {
-			player.bounds.x -= 0.9 * factor;
-		}
-		if (Y < -0.25 && Y >= -0.50) {
-			player.bounds.x -= 1.9 * factor;
-		}
-		if (Y < -0.50 && Y >= -0.75) {
-			player.bounds.x -= 2.9 * factor;
-		}
-		if (Y < -0.75 && Y >= -1.00) {
-			player.bounds.x -= 3.9 * factor;
-		}
-		if (Y < -1.00 && Y >= -1.25) {
-			player.bounds.x -= 4.9 * factor;
-		}
-		if (Y < -1.25 && Y >= -1.50) {
-			player.bounds.x -= 5.9 * factor;
-		}
-		if (Y < -1.50 && Y >= -1.75) {
-			player.bounds.x -= 6.4 * factor;
-		}
-		if (Y < -1.75 && Y >= -2.00) {
-			player.bounds.x -= 6.9 * factor;
-		}
-		if (Y < -2.00 && Y >= -2.25) {
-			player.bounds.x -= 7.4 * factor;
-		}
-		if (Y < -2.25 && Y >= -2.50) {
-			player.bounds.x -= 7.9 * factor;
-		}
-		if (Y < -2.50 && Y >= -2.75) {
-			player.bounds.x -= 8.4 * factor;
-		}
-		if (Y < -2.75 && Y >= -3.00) {
-			player.bounds.x -= 15.9 * factor;
-		}
-		if (Y < -3.00 && Y >= -3.25) {
-			player.bounds.x -= 19.9 * factor;
-		}
-		if (Y < -3.25) {
-			player.bounds.x -= 25.9 * factor;
-		}
+		player.bounds.x += 0.9 + ((Y / 0.25) * factor);
 
 	}
 
@@ -2488,11 +1368,8 @@ public class GameScreen implements Screen {
 		stateTime += Gdx.graphics.getDeltaTime();
 		Assets.current_frame = Assets.explosion_animation.getKeyFrame(
 				stateTime, true);
-		// batch.begin();
 
 		batch.draw(Assets.current_frame, x, y);
-
-		// batch.end();
 
 	}
 

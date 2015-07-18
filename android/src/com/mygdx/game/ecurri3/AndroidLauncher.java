@@ -28,8 +28,6 @@ public class AndroidLauncher extends AndroidApplication {
 		config.useAccelerometer = true;
 		config.useCompass = false;
 
-		//initialize(new MyGame(), config);
-
 		// Create the layout
 		RelativeLayout layout = new RelativeLayout(this);
 
@@ -44,25 +42,25 @@ public class AndroidLauncher extends AndroidApplication {
 		View gameView = initializeForView(new MyGame(), config);
 
 //		// Create and setup the AdMob view
-//		AdView adView = createAdView(); // Put in your secret key here
-//		AdRequest adRequest = new AdRequest.Builder().build();
-//		adView.loadAd(adRequest);
+		//AdView adView = createAdView(); // Put in your secret key here
+		//AdRequest adRequest = new AdRequest.Builder().build();
+		//adView.loadAd(adRequest);
 
 		// Add the libgdx view
 		layout.addView(gameView);
 
 //		// Add the AdMob view
-//		RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(
-//				RelativeLayout.LayoutParams.WRAP_CONTENT,
-//				RelativeLayout.LayoutParams.WRAP_CONTENT);
-//		adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-//		adParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-//
-//		layout.addView(adView, adParams);
-//
+		//RelativeLayout.LayoutParams adParams = new RelativeLayout.LayoutParams(
+				//RelativeLayout.LayoutParams.WRAP_CONTENT,
+				//RelativeLayout.LayoutParams.WRAP_CONTENT);
+		//adParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+		//adParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+
+		//layout.addView(adView, adParams);
+
 //		// Hook it all up
 		setContentView(layout);
-//		startAdvertising(adView);
+		//startAdvertising(adView);
 	}
 
 	private AdView createAdView() {

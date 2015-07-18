@@ -13,10 +13,24 @@
         />
     
     <Button
+        android:id="@+id/health"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Health Upgrades"
+        />
+    
+    <Button
         android:id="@+id/rapid"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Rapid Fire Upgrades"
+        />
+    
+    <Button
+        android:id="@+id/multi"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Multi Shot Upgrades"
         />
     
 
