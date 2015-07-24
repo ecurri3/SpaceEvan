@@ -11,33 +11,65 @@
         android:layout_height="match_parent" >
 
         <LinearLayout
-            android:id="@+id/colLayout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:weightSum="2" >
+            android:orientation="vertical" >
 
             <LinearLayout
-                android:id="@+id/col1"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:orientation="vertical" >
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <Button
+                    android:id="@+id/exitButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:text="EXIT TO STORE" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:id="@+id/currency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:textColor="#ffff00"
+                    android:textSize="24sp" />
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/col2"
-                android:layout_width="0dp"
+                android:id="@+id/colLayout"
+                android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_weight="1"
-                android:orientation="vertical" >
-            </LinearLayout>
-            
-            <LinearLayout
-                android:id="@+id/col3"
-                android:layout_width="0dp"
-                android:layout_height="fill_parent"
-                android:layout_weight="0"
-                android:orientation="vertical" >
+                android:weightSum="2" >
+
+                <LinearLayout
+                    android:id="@+id/col1"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/col2"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical" >
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/col3"
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="0"
+                    android:orientation="vertical" >
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 

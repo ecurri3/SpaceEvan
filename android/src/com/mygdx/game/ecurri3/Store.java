@@ -2,22 +2,38 @@ package com.mygdx.game.ecurri3;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.google.gson.Gson;
+import com.mygdx.gameData.GameData;
+import com.mygdx.gameData.GameTimers;
 import com.mygdx.gameData.PlayerData;
 import com.mygdx.gameData.StoreData;
 
 public class Store extends AndroidApplication{
 	
 PlayerData playerData;
+GameData gameData;
+GameTimers gameTimers;
 	
 	public void onCreate (Bundle bundle) {
 		super.onCreate(bundle);
 		initialize(listener);
 		setContentView(R.layout.activity_store);
+		
+		gameData = new GameData();
+		gameTimers = new GameTimers();
+		playerData = new PlayerData(gameData, gameTimers);
+		
+		TextView title = (TextView) findViewById(R.id.title);
+		SpannableString content = new SpannableString("Upgrades");
+		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+		title.setText(content);
 		
 		final StoreData storeData = new StoreData();
 		
@@ -25,8 +41,6 @@ PlayerData playerData;
 		missile.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
             	Intent intent = new Intent(Store.this, StoreCustom.class);
-            	intent.putExtra("pref1",  "mUpAuto");
-            	intent.putExtra("pref2", "mUpReload");
             	Gson gson = new Gson();
             	String json = gson.toJson(storeData.missileData);
             	intent.putExtra("arrayJSON", json);
@@ -38,10 +52,19 @@ PlayerData playerData;
 		health.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
             	Intent intent = new Intent(Store.this, StoreCustom.class);
-            	intent.putExtra("pref1",  "hUpRegen");
-            	intent.putExtra("pref2", "hUpHealth");
             	Gson gson = new Gson();
             	String json = gson.toJson(storeData.healthData);
+            	intent.putExtra("arrayJSON", json);
+                startActivity(intent);
+            }
+        });
+		
+		Button power = (Button) findViewById(R.id.power);
+		power.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+            	Intent intent = new Intent(Store.this, StoreCustom.class);
+            	Gson gson = new Gson();
+            	String json = gson.toJson(storeData.powerData);
             	intent.putExtra("arrayJSON", json);
                 startActivity(intent);
             }
@@ -51,9 +74,6 @@ PlayerData playerData;
 		rapid.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
             	Intent intent = new Intent(Store.this, StoreCustom.class);
-            	intent.putExtra("pref1",  "rapidUpDur");
-            	intent.putExtra("pref2", "rapidUpReload");
-            	intent.putExtra("pref3", "rapidUpRicochet");
             	Gson gson = new Gson();
             	String json = gson.toJson(storeData.rapidData);
             	intent.putExtra("arrayJSON", json);
@@ -65,9 +85,6 @@ PlayerData playerData;
 		multi.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
             	Intent intent = new Intent(Store.this, StoreCustom.class);
-            	intent.putExtra("pref1",  "multiUpDur");
-            	intent.putExtra("pref2", "multiUpAmount");
-            	intent.putExtra("pref3", "multiUpMirror");
             	Gson gson = new Gson();
             	String json = gson.toJson(storeData.multiData);
             	intent.putExtra("arrayJSON", json);
@@ -75,6 +92,49 @@ PlayerData playerData;
             }
         });
 		
+		Button shotgun = (Button) findViewById(R.id.shotgun);
+		shotgun.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+            	Intent intent = new Intent(Store.this, StoreCustom.class);
+            	Gson gson = new Gson();
+            	String json = gson.toJson(storeData.shotgunData);
+            	intent.putExtra("arrayJSON", json);
+                startActivity(intent);
+            }
+        });
+		
+		Button auto = (Button) findViewById(R.id.auto);
+		auto.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+            	Intent intent = new Intent(Store.this, StoreCustom.class);
+            	Gson gson = new Gson();
+            	String json = gson.toJson(storeData.autoData);
+            	intent.putExtra("arrayJSON", json);
+                startActivity(intent);
+            }
+        });
+		
+		Button swiftness = (Button) findViewById(R.id.swiftness);
+		swiftness.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+            	Intent intent = new Intent(Store.this, StoreCustom.class);
+            	Gson gson = new Gson();
+            	String json = gson.toJson(storeData.swiftnessData);
+            	intent.putExtra("arrayJSON", json);
+                startActivity(intent);
+            }
+        });
+		
+		Button big = (Button) findViewById(R.id.big);
+		big.setOnClickListener(new Button.OnClickListener() {
+            public void onClick(View v) {
+            	Intent intent = new Intent(Store.this, StoreCustom.class);
+            	Gson gson = new Gson();
+            	String json = gson.toJson(storeData.bigData);
+            	intent.putExtra("arrayJSON", json);
+                startActivity(intent);
+            }
+        });
 	}
 
 	@Override
@@ -85,6 +145,11 @@ PlayerData playerData;
 	@Override
 	public void onDestroy () {
 		super.onDestroy();
+	}
+	
+	@Override
+	public void onBackPressed() {
+		startActivity(new Intent(Store.this, ActivityTest.class));
 	}
 
 }

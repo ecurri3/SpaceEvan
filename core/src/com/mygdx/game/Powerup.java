@@ -1,8 +1,9 @@
 package com.mygdx.game;
 
+import java.util.Random;
+
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Circle;
-import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.gameData.GameData;
 import com.mygdx.gameData.GameTimers;
 
@@ -11,6 +12,7 @@ public class Powerup {
 	public Sprite image;
 	public Circle Cbounds;
 	public int numType;
+	Random rand = new Random();
 
 	public Powerup() {
 		image = Assets.powerup_rapid;
@@ -51,8 +53,8 @@ public class Powerup {
 		}
 		Cbounds = new Circle(spawnX, 0, 75);
 	}
-	
-	public void executePowerUp(GameData gameData, GameTimers gameTimers, int n){
+
+	public void executePowerUp(GameData gameData, GameTimers gameTimers, int n) {
 		switch (n) {
 		case 1:
 			Assets.powerup1.play();
@@ -63,6 +65,11 @@ public class Powerup {
 			Assets.powerup4.play();
 			gameData.multiShot = true;
 			gameTimers.multiShot_start = gameTimers.getNanoTime();
+			if (gameData.mirror) {
+				int chance = rand.nextInt(100) + 1;
+				if (chance <= gameData.mirrorChance)
+					gameData.mirrorTwins = true;
+			}
 			break;
 		case 3:
 			Assets.powerup2.play();
@@ -77,12 +84,23 @@ public class Powerup {
 			Assets.powerup5.play();
 			gameData.autoFire = true;
 			gameTimers.autoFire_start = gameTimers.getNanoTime();
+			if (gameData.autoCannon) {
+				int chance = rand.nextInt(100) + 1;
+				if (chance <= gameData.autoCannonChance * 20)
+					gameData.cannons = true;
+			}
 			break;
 		case 6:
 			Assets.powerup6.play();
 			gameData.swiftnessPower = true;
-			gameTimers.swiftnessPower_start = gameTimers
-					.getNanoTime();
+			gameTimers.swiftnessPower_start = gameTimers.getNanoTime();
+			if (gameData.slowTime)
+				gameData.slow_time = true;
+			if (gameData.swiftnessShield) {
+				int chance = rand.nextInt(100) + 1;
+				if (chance <= gameData.swiftnessShieldChance)
+					gameData.static_shield = true;
+			}
 			break;
 		case 7:
 			Assets.powerup7.play();

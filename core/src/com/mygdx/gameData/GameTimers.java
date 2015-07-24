@@ -87,6 +87,12 @@ public class GameTimers {
 
 	// base Shotgun power up duration, 12.5 seconds
 	public int shotgunDuration = 1250;
+	
+	public int autoDuration = 1500;
+	
+	public int swiftnessDuration = 1500;
+	
+	public int bigDuration = 2250;
 
 	// powerup spawn timer
 	public int powerup_spawn_timer = 1000;

@@ -81,6 +81,30 @@ public class PlayerData {
 		if (!prefs.contains("shotgunUpLandmine"))
 			prefs.putInteger("shotgunUpLandmine", 0);
 
+		// AUTO FIRE
+		if (!prefs.contains("autoUpDur"))
+			prefs.putInteger("autoUpDur", 0);
+
+		if (!prefs.contains("autoUpCannon"))
+			prefs.putInteger("autoUpCannon", 0);
+
+		// SWIFTNESS
+		if (!prefs.contains("swiftnessUpDur"))
+			prefs.putInteger("swiftnessUpDur", 0);
+
+		if (!prefs.contains("swiftnessUpShield"))
+			prefs.putInteger("swiftnessUpShield", 0);
+
+		if (!prefs.contains("swiftnessUpTime"))
+			prefs.putInteger("swiftnessUpTime", 0);
+
+		// BIGAMMO
+		if (!prefs.contains("bigUpDur"))
+			prefs.putInteger("bigUpDur", 0);
+
+		if (!prefs.contains("bigUpExplosion"))
+			prefs.putInteger("bigUpExplosion", 0);
+
 		// GENERAL
 		if (!prefs.contains("generalUpDur"))
 			prefs.putInteger("generalUpDur", 0);
@@ -112,7 +136,9 @@ public class PlayerData {
 		}
 
 		// Extra Health
-		gameData.player_health = 5 + (1 * prefs.getInteger("hUpHealth"));
+		if (prefs.getInteger("hUpHealth") != 0) {
+			gameData.max_health = 5 + (1 * prefs.getInteger("hUpHealth"));
+		}
 
 		// Rapid Fire Duration
 		gameTimers.rapidFireDuration = 1500 + (150 * prefs
@@ -128,7 +154,8 @@ public class PlayerData {
 		}
 
 		// Multi Shot Duration
-		gameTimers.multiShotDuration = (int) (2250 * (1 + (0.05 * prefs.getInteger("multiUpDur"))));
+		gameTimers.multiShotDuration = (int) (2250 * (1 + (0.05 * prefs
+				.getInteger("multiUpDur"))));
 
 		// Multi Shot missile amount
 		if (prefs.getInteger("multiUpAmount") != 0) {
@@ -140,7 +167,7 @@ public class PlayerData {
 		// Mirror Image Upgrade
 		if (prefs.getInteger("multiUpMirror") != 0) {
 			gameData.mirror = true;
-			gameData.mirrorChance = 0 + (1 * prefs.getInteger("multiUpMirror"));
+			gameData.mirrorChance = 0 + (20 * prefs.getInteger("multiUpMirror"));
 		}
 
 		// Shotgun Duration
@@ -160,6 +187,50 @@ public class PlayerData {
 			gameData.landmineChance = 0 + prefs.getInteger("shotgunUpLandmine");
 		}
 
+		// Auto Fire duration
+		if (prefs.getInteger("autoUpDur") != 0) {
+			gameTimers.autoDuration = 1500 + (150 * prefs
+					.getInteger("autoUpDur"));
+		}
+
+		// Auto Fire Cannon
+		if (prefs.getInteger("autoUpCannon") != 0) {
+			gameData.autoCannon = true;
+			gameData.autoCannonChance = 0 + prefs.getInteger("autoUpCannon");
+		}
+
+		// Swiftness duration
+		if (prefs.getInteger("swiftnessUpDur") != 0) {
+			gameTimers.swiftnessDuration = 1500 + (225 * prefs
+					.getInteger("swiftnessUpDur"));
+		}
+
+		// Swiftness Shield
+		if (prefs.getInteger("swiftnessUpShield") != 0) {
+			gameData.swiftnessShield = true;
+			gameData.swiftnessShieldChance = 20 + (15 * (prefs
+					.getInteger("swiftnessUpShield") - 1));
+		}
+
+		// Swiftness Time
+		if (prefs.getInteger("swiftnessUpTime") != 0) {
+			gameData.slowTime = true;
+			gameData.slowTimeAmount = 0 + (10 * prefs
+					.getInteger("swiftnessUpTime"));
+		}
+
+		// Big Ammo duration
+		if (prefs.getInteger("bigUpDur") != 0) {
+			gameTimers.bigDuration = 2250 + (225 * prefs.getInteger("bigUpDur"));
+		}
+
+		// Big Ammo Explosion
+		if (prefs.getInteger("bigUpExplosion") != 0) {
+			gameData.bigExplosion = true;
+			gameData.bigExplosionChance = 0 + (20 * prefs
+					.getInteger("bigUpExplosion"));
+		}
+
 		// General powerup spawn timer
 		gameTimers.powerup_spawn_timer = 1000 - (100 * prefs
 				.getInteger("genUpDur"));
@@ -169,6 +240,16 @@ public class PlayerData {
 			gameData.extra_powerup = true;
 			gameData.extra_powerup_chance = 0 + prefs.getInteger("genUpExtra");
 		}
+	}
+
+	public static int getCurrency() {
+		return prefs.getInteger("currency");
+	}
+
+	public void setCurrency(int value) {
+		int current = getCurrency();
+		prefs.putInteger("currency", (current + value));
+		prefs.flush();
 	}
 
 }

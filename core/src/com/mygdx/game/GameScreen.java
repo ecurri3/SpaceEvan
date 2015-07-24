@@ -6,29 +6,20 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.Input.Peripheral;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import com.mygdx.gameData.*;
 
 public class GameScreen implements Screen {
@@ -58,19 +49,10 @@ public class GameScreen implements Screen {
 
 	// EXPERIMENTAL
 	private Stage stage;
-	private TextureAtlas buttonsAtlas; // ** image of buttons **//
-	private Skin buttonSkin; // ** images are used as skins of the button **//
-	private TextButton fireButton, leftButton, rightButton, pauseButton; // **
-																			// the
-																			// button
-																			// -
-																			// the
-																			// only
-																			// actor
-																			// in
-																			// program
+	private TextButton fireButton, leftButton, rightButton, pauseButton;
 	// **//
-	boolean fireButtonBool, leftButtonBool, rightButtonBool, pauseButtonBool = false;
+	boolean fireButtonBool, leftButtonBool, rightButtonBool,
+			pauseButtonBool = false;
 
 	float rotation;
 
@@ -106,7 +88,6 @@ public class GameScreen implements Screen {
 	UserInterface userInterface;
 	AnimatedBackground anim_background;
 	Health health;
-	ExtraHealth extrahealth;
 
 	/*
 	 * Classes used for power up text in bottom right corner of screen
@@ -114,7 +95,7 @@ public class GameScreen implements Screen {
 	PowerText powerText;
 
 	// Determines whether the game is paused or active
-	boolean paused;
+	boolean paused = false;
 
 	// Keeps track of which way the player is currently accelerating
 	boolean accelLeft;
@@ -137,6 +118,7 @@ public class GameScreen implements Screen {
 	Array<Bullet> bullets = new Array<Bullet>();
 	Array<Explosion> explosions = new Array<Explosion>();
 	Array<Landmine> landmines = new Array<Landmine>();
+	Array<Cannon> cannons = new Array<Cannon>();
 
 	// Checks if accelerometer is available on current device
 	boolean available = Gdx.input
@@ -152,7 +134,7 @@ public class GameScreen implements Screen {
 		camera = new OrthographicCamera();
 		// Dimensions of the screen
 		// Extra 100 is for banner ad
-		camera.setToOrtho(true, 1920, 1180);
+		camera.setToOrtho(true, 1920, 1080);
 
 		/*
 		 * Initialize classes
@@ -162,7 +144,6 @@ public class GameScreen implements Screen {
 		player = new Player();
 		missile = new Missile();
 		health = new Health();
-		extrahealth = new ExtraHealth();
 		powerText = new PowerText();
 
 		score = 0;
@@ -208,7 +189,9 @@ public class GameScreen implements Screen {
 		stage.clear();
 		Gdx.input.setInputProcessor(stage); // ** stage is responsive **//
 
-		fireButton = userInterface.createButton(stage, "fireButtonDown", "fireButtonUp", "FB_down.png", "FB_up.png", Assets.font12, 1315, 100, 150, 590);
+		fireButton = userInterface.createButton(stage, "fireButtonDown",
+				"fireButtonUp", "FB_down.png", "FB_up.png", Assets.font12,
+				1315, 15, 150, 590);
 		fireButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -222,8 +205,10 @@ public class GameScreen implements Screen {
 			}
 		});
 		stage.addActor(fireButton);
-		
-		leftButton = userInterface.createButton(stage, "leftButtonDown", "leftButtonUp", "LB_down.png", "LB_up.png", Assets.font12, 20, 105, 140, 290);
+
+		leftButton = userInterface.createButton(stage, "leftButtonDown",
+				"leftButtonUp", "LB_down.png", "LB_up.png", Assets.font12, 20,
+				20, 140, 290);
 		leftButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -237,8 +222,10 @@ public class GameScreen implements Screen {
 			}
 		});
 		stage.addActor(leftButton);
-		
-		rightButton = userInterface.createButton(stage, "rightButtonDown", "rightButtonUp", "RB_down.png", "RB_up.png", Assets.font12, 310, 105, 140, 290);
+
+		rightButton = userInterface.createButton(stage, "rightButtonDown",
+				"rightButtonUp", "RB_down.png", "RB_up.png", Assets.font12,
+				310, 20, 140, 290);
 		rightButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -252,8 +239,10 @@ public class GameScreen implements Screen {
 			}
 		});
 		stage.addActor(rightButton);
-		
-		pauseButton = userInterface.createButton(stage, "pauseButtonDown", "pauseButtonUp", "PB_down.png", "PB_up.png", Assets.font12, 825, 180, 70, 155);
+
+		pauseButton = userInterface.createButton(stage, "pauseButtonDown",
+				"pauseButtonUp", "PB_down.png", "PB_up.png", Assets.font12,
+				825, 100, 70, 155);
 		pauseButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -262,6 +251,13 @@ public class GameScreen implements Screen {
 			}
 		});
 		stage.addActor(pauseButton);
+
+		if (cannons.size != 4) {
+			cannons.add(new Cannon(100, 830));
+			cannons.add(new Cannon(600, 830));
+			cannons.add(new Cannon(1220, 830));
+			cannons.add(new Cannon(1720, 830));
+		}
 	}
 
 	@Override
@@ -284,10 +280,49 @@ public class GameScreen implements Screen {
 		stage.act();
 		batch.begin();
 
-		anim_background.draw(batch);
+		// Order of drawing
+		/*
+		 * 1. Background 2. Auto-fire Reticle 3. Cannons 4. Player 5. Static
+		 * Shield 6. Missile 7. Bullet 8. Enemy 9. Landmine 10. Powerup 11. User
+		 * Interface 12. Health 13. Powerup Text 14. Score
+		 */
 
 		// If game is paused, enter this statement
+		if (!paused) {
+
+			// Update game differently depending on current device
+			switch (Gdx.app.getType()) {
+			case Android:
+				generalUpdateAndroid(touch, camera);
+				break;
+			case Desktop:
+				generalUpdate();
+				break;
+			default:
+				break;
+			}
+			// Check for any offscreen sprites
+			checkOffScreen();
+			// Check for any collisions between sprites
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					Gdx.app.postRunnable(new Runnable() {
+						@Override
+						public void run() {
+							checkCollision();
+						}
+					});
+				}
+			}).start();
+		}
+
+		drawAll();
+
+		// If game is paused, draw sprites underneath the pause display
 		if (paused) {
+			batch.draw(Assets.pause, 260, 80);
+			displayScore();
 			if (Gdx.input.isKeyPressed(Keys.SPACE)) {
 				resumeGame();
 			}
@@ -307,65 +342,7 @@ public class GameScreen implements Screen {
 					game.setScreen(game.gameOver_screen);
 				}
 			}
-		} else {
-
-			// Update game differently depending on current device
-			switch (Gdx.app.getType()) {
-			case Android:
-				generalUpdateAndroid(touch, camera);
-				break;
-			case Desktop:
-				generalUpdate();
-				break;
-			default:
-				break;
-			}
-			// Check for any offscreen sprites
-			checkOffScreen();
-			// Check for any collisions between sprites
-			new Thread(new Runnable() {
-				@Override
-				public void run() {
-					// time to post on the main thread!
-					Gdx.app.postRunnable(new Runnable() {
-						@Override
-						public void run() {
-							// this will be run on the application listener
-							// thread
-							// before the next call to
-							// ApplicationListener#render()
-							checkCollision();
-						}
-					});
-				}
-			}).start();
 		}
-
-		// Red Dotted line
-		if (gameData.autoFire)
-			batch.draw(Assets.sprite_auto_aim, player.bounds.x + 80,
-					player.bounds.y - 1080);
-
-		// Player
-		player.drawR(batch, rotation, gameData);
-
-		drawAll();
-
-		// If game is paused, draw sprites underneath the pause display
-		if (paused) {
-			batch.draw(Assets.pause, 260, 80);
-			displayScore();
-		}
-
-		userInterface.draw(batch);
-
-		// Health Bar
-		health.draw(batch, gameData);
-
-		// Display Power-Up Text
-		powerText.draw(batch, gameData);
-		// Display Score
-		displayScore();
 
 		stage.draw();
 		batch.end();
@@ -396,9 +373,9 @@ public class GameScreen implements Screen {
 		checkDurations();
 		checkAcceleration();
 		updatePlayerSprite();
-		
+
 		double factor = 1.0;
-		if(gameData.swiftnessPower)
+		if (gameData.swiftnessPower)
 			factor = 1.15;
 
 		if (control_tilt) {
@@ -406,9 +383,9 @@ public class GameScreen implements Screen {
 			computeMovement(accelY);
 		}
 		if (control_button) {
-			if(leftButtonBool)
+			if (leftButtonBool)
 				accelerationX -= 1.5 * factor;
-			if(rightButtonBool)
+			if (rightButtonBool)
 				accelerationX += 1.5 * factor;
 			updatePlayerMovement();
 		}
@@ -417,6 +394,11 @@ public class GameScreen implements Screen {
 			if (!gameTimers.recentlyFired_auto) {
 				gameTimers.startTime_auto = gameTimers.getNanoTime();
 				fireProjectile();
+				if (gameData.cannons) {
+					for (Cannon c : cannons) {
+						fireCannons(c);
+					}
+				}
 			}
 		}
 
@@ -466,14 +448,6 @@ public class GameScreen implements Screen {
 			}
 			powerUpdate(p);
 		}
-		if (gameData.explosionBool) {
-			for (Explosion e : explosions) {
-				updateExplosions(e.bounds.x, e.bounds.y);
-				e.timer++;
-				if (e.checkEnd())
-					explosions.removeValue(e, false);
-			}
-		}
 	}
 
 	/*
@@ -497,6 +471,15 @@ public class GameScreen implements Screen {
 					missiles.removeValue(m, false);
 					explosionSound(m.bounds.x, m.bounds.y);
 
+					if (gameData.bigAmmo) {
+						if (gameData.bigExplosion) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (gameData.bigExplosionChance)) {
+								spawnBigExplosion(m.bounds);
+							}
+						}
+					}
+
 					// If ricochet is active
 					if (gameData.rapidFire) {
 						if (gameData.ricochet) {
@@ -517,6 +500,7 @@ public class GameScreen implements Screen {
 				if (Intersector.overlaps(p.Cbounds, player.bounds)) {
 					// POWERUP
 					p.executePowerUp(gameData, gameTimers, p.numType);
+					powerups.removeValue(p, false);
 				}
 			}
 		}
@@ -548,6 +532,15 @@ public class GameScreen implements Screen {
 						int chance = rand.nextInt(100) + 1;
 						if (chance <= (10 + (gameData.landmineChance * 5)))
 							landmines.add(new Landmine(b.bounds.x, b.bounds.y));
+					}
+
+					if (gameData.bigAmmo) {
+						if (gameData.bigExplosion) {
+							int chance = rand.nextInt(100) + 1;
+							if (chance <= (gameData.bigExplosionChance)) {
+								spawnBigExplosion(b.bounds);
+							}
+						}
 					}
 
 					if (gameData.rapidFire) {
@@ -588,6 +581,42 @@ public class GameScreen implements Screen {
 				}
 			}
 		}
+		for (Explosion x : explosions) {
+			if (x.big) {
+				for (Enemy e : enemies) {
+					if (Intersector.overlaps(x.cBounds, e.Cbounds)) {
+
+						e.health--;
+						if (e.health <= 0) {
+							if (e.normal)
+								score++;
+							if (e.gold)
+								score += 15;
+							if (e.strong)
+								score += 8;
+							enemies.removeValue(e, false);
+						}
+					}
+				}
+			}
+		}
+		if (gameData.static_shield) {
+			for (Enemy e : enemies) {
+				if (Intersector.overlaps(e.Cbounds, player.shield_bounds)) {
+					e.health--;
+					if (e.health <= 0) {
+						if (e.normal)
+							score++;
+						if (e.gold)
+							score += 15;
+						if (e.strong)
+							score += 8;
+						enemies.removeValue(e, false);
+					}
+					explosionSound(-100, -100);
+				}
+			}
+		}
 	}
 
 	/*
@@ -614,18 +643,23 @@ public class GameScreen implements Screen {
 	 */
 	public void enemyUpdate(Enemy enemy) {
 
+		double factor = 1.0;
+		if (gameData.slow_time)
+			factor = 1.0 - (0.1 * PlayerData.prefs
+					.getInteger("swiftnessUpTime"));
+
 		if (enemy.normal) {
-			enemy.Cbounds.y += 3.25;
+			enemy.Cbounds.y += 3.25 * factor;
 			batch.draw(enemy.image, enemy.Cbounds.x - (float) 37.5,
 					enemy.Cbounds.y - (float) 37.5);
 		}
 		if (enemy.gold) {
-			enemy.Cbounds.y += 5;
+			enemy.Cbounds.y += 5 * factor;
 			batch.draw(enemy.image, enemy.Cbounds.x - (float) 70,
 					enemy.Cbounds.y - (float) 70);
 		}
 		if (enemy.strong) {
-			enemy.Cbounds.y += 2;
+			enemy.Cbounds.y += 2 * factor;
 			batch.draw(enemy.image, enemy.Cbounds.x - (float) 100,
 					enemy.Cbounds.y - (float) 100);
 		}
@@ -722,6 +756,41 @@ public class GameScreen implements Screen {
 	 */
 	public void drawAll() {
 
+		anim_background.draw(batch, paused);
+
+		// Red Dotted line
+		if (gameData.autoFire) {
+			batch.draw(Assets.sprite_auto_aim, player.bounds.x + 80,
+					player.bounds.y - 1080);
+		}
+
+		if (gameData.cannons) {
+			for (Cannon c : cannons)
+				batch.draw(c.cannon, c.bounds.x, c.bounds.y,
+						c.cannon.getOriginX(), c.cannon.getOriginY(), 100, 100,
+						1, 1, c.degree);
+		}
+
+		// Player
+		player.drawR(batch, rotation, gameData);
+
+		if (gameData.static_shield) {
+			stateTime += Gdx.graphics.getDeltaTime();
+			player.drawShield(batch, stateTime, paused);
+		}
+		
+		if (gameData.explosionBool) {
+			for (Explosion e : explosions) {
+				if (e.big)
+					updateExplosions(e.cBounds.x, e.cBounds.y, e);
+				else
+					updateExplosions(e.bounds.x, e.bounds.y, e);
+				e.timer++;
+				if (e.checkEnd())
+					explosions.removeValue(e, false);
+			}
+		}
+
 		for (Missile m : missiles) {
 			batch.draw(m.image, m.bounds.x, m.bounds.y);
 		}
@@ -745,6 +814,16 @@ public class GameScreen implements Screen {
 		for (Landmine l : landmines) {
 			batch.draw(l.image, l.Cbounds.x - 30, l.Cbounds.y - 30);
 		}
+		
+		userInterface.draw(batch);
+
+		// Health Bar
+		health.draw(batch, gameData);
+
+		// Display Power-Up Text
+		powerText.draw(batch, gameData);
+		// Display Score
+		displayScore();
 	}
 
 	/*
@@ -786,7 +865,7 @@ public class GameScreen implements Screen {
 			setHighScore(score);
 		}
 
-		MenuScreen.setCurrency(score * 2);
+		playerData.setCurrency(score * 2);
 
 		coinsEarned = score * 2;
 		long gameEnd = gameTimers.getNanoTime();
@@ -885,19 +964,22 @@ public class GameScreen implements Screen {
 
 		gameTimers.autoFire_end = gameTimers.getNanoTime();
 		gameTimers.autoFire_dur = (gameTimers.autoFire_end - gameTimers.autoFire_start);
-		if (gameTimers.autoFire_dur >= 1500) {
+		if (gameTimers.autoFire_dur >= gameTimers.autoDuration) {
 			gameData.autoFire = false;
+			gameData.cannons = false;
 		}
 
 		gameTimers.swiftnessPower_end = gameTimers.getNanoTime();
 		gameTimers.swiftnessPower_dur = (gameTimers.swiftnessPower_end - gameTimers.swiftnessPower_start);
-		if (gameTimers.swiftnessPower_dur >= 1500) {
+		if (gameTimers.swiftnessPower_dur >= gameTimers.swiftnessDuration) {
 			gameData.swiftnessPower = false;
+			gameData.slow_time = false;
+			gameData.static_shield = false;
 		}
 
 		gameTimers.bigAmmo_end = gameTimers.getNanoTime();
 		gameTimers.bigAmmo_dur = (gameTimers.bigAmmo_end - gameTimers.bigAmmo_start);
-		if (gameTimers.bigAmmo_dur >= 2250) {
+		if (gameTimers.bigAmmo_dur >= gameTimers.bigDuration) {
 			gameData.bigAmmo = false;
 		}
 
@@ -910,7 +992,7 @@ public class GameScreen implements Screen {
 			powerups.add(new Powerup(randomNum, randomPower));
 			if (gameData.extra_powerup) {
 				int chance = rand.nextInt(100) + 1;
-				if (chance <= (gameData.extra_powerup_chance * 15)) {
+				if (chance <= (gameData.extra_powerup_chance * 20)) {
 					randomNum = rand.nextInt(1752) + 52;
 					randomPower = rand.nextInt(7) + 1;
 					powerups.add(new Powerup(randomNum, randomPower));
@@ -961,9 +1043,9 @@ public class GameScreen implements Screen {
 	 * This function handles all input for the Desktop version of the game
 	 */
 	public void checkDesktopInput() {
-		
+
 		double factor = 1.0;
-		if(gameData.swiftnessPower)
+		if (gameData.swiftnessPower)
 			factor = 1.5;
 
 		if (Gdx.input.isKeyPressed(Keys.A)) {
@@ -1014,6 +1096,14 @@ public class GameScreen implements Screen {
 		else if (accelerationX < 0.0)
 			accelLeft = true;
 
+	}
+
+	public void fireCannons(Cannon cannon) {
+		int x = rand.nextInt(20) - 10;
+		int y = rand.nextInt(5) + 20;
+		bullets.add(new Bullet(cannon.bounds.x - 50, cannon.bounds.y, x, y,
+				true));
+		cannon.drawR(batch, x, y);
 	}
 
 	public void fireProjectile() {
@@ -1149,6 +1239,10 @@ public class GameScreen implements Screen {
 		bullets.add(new Bullet(bounds.x, bounds.y, -8, 20));
 	}
 
+	public void spawnBigExplosion(Rectangle bounds) {
+		explosions.add(new Explosion(bounds.x, bounds.y, true));
+	}
+
 	/*
 	 * This function is responsible for pausing the game and handling all
 	 * variables that are important and would otherwise be affected by a pause
@@ -1274,7 +1368,7 @@ public class GameScreen implements Screen {
 	public void explosionSound(float x, float y) {
 
 		gameData.explosionBool = true;
-		explosions.add(new Explosion(x, y));
+		explosions.add(new Explosion(x, y, false));
 
 		int randomNum = rand.nextInt(6) + 1;
 
@@ -1363,13 +1457,15 @@ public class GameScreen implements Screen {
 	/*
 	 * Updates all ongoing explosion aniamtions
 	 */
-	public void updateExplosions(float x, float y) {
+	public void updateExplosions(float x, float y, Explosion e) {
 
 		stateTime += Gdx.graphics.getDeltaTime();
-		Assets.current_frame = Assets.explosion_animation.getKeyFrame(
-				stateTime, true);
 
-		batch.draw(Assets.current_frame, x, y);
+		e.current_frame = e.explosion_animation.getKeyFrame(stateTime, true);
+		if (e.big)
+			batch.draw(e.current_frame, x - 300f, y - 300f);
+		else
+			batch.draw(e.current_frame, x, y);
 
 	}
 

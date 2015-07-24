@@ -2,6 +2,7 @@ package com.mygdx.game.ecurri3;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
@@ -27,13 +28,13 @@ public class StoreCustom extends AndroidApplication {
 	Animation slide_in_left, slide_out_right;
 
 	// Declare TextViews used in the second screen
-	TextView name_view, desc_view, cost_view, tier_view;
+	TextView name_view, desc_view, cost_view, tier_view, currency;
 
 	// Declare linear layouts used in setup of first screen
 	LinearLayout colLayout, col1, col2, col3;
-	
+
 	// Declare buttons used in confirm purchase screen
-	Button backButton, confirmButton;
+	Button exitButton, backButton, confirmButton;
 
 	// Load Player and Store Data
 	GameData gameData;
@@ -41,15 +42,12 @@ public class StoreCustom extends AndroidApplication {
 	PlayerData playerData;
 	StoreData storeData;
 
-	// Preference names
-	String pref1, pref2, pref3, customPref;
-
 	Toast toast;
 
 	// Variables used in second screen
 	// Still deciding if these are needed or not, but could provide useful in
 	// the future
-	String purchaseName, purchaseDesc;
+	String purchaseName, purchaseDesc, purchaseKey;
 	int purchaseCost, purchaseTier, ownedTier;
 
 	public void onCreate(Bundle bundle) {
@@ -65,6 +63,7 @@ public class StoreCustom extends AndroidApplication {
 		slide_out_right = AnimationUtils.loadAnimation(this,
 				android.R.anim.slide_out_right);
 
+		currency = (TextView) findViewById(R.id.currency);
 		name_view = (TextView) findViewById(R.id.confirmName);
 		desc_view = (TextView) findViewById(R.id.confirmDesc);
 		cost_view = (TextView) findViewById(R.id.confirmCost);
@@ -73,7 +72,8 @@ public class StoreCustom extends AndroidApplication {
 		col1 = (LinearLayout) findViewById(R.id.col1);
 		col2 = (LinearLayout) findViewById(R.id.col2);
 		col3 = (LinearLayout) findViewById(R.id.col3);
-		
+
+		exitButton = (Button) findViewById(R.id.exitButton);
 		backButton = (Button) findViewById(R.id.backButton);
 		confirmButton = (Button) findViewById(R.id.confirmButton);
 
@@ -84,6 +84,8 @@ public class StoreCustom extends AndroidApplication {
 		storeData = new StoreData();
 
 		Bundle extras = getIntent().getExtras(); // Retrieve extras
+		currency.setText("Space Coins: "
+				+ playerData.prefs.getInteger("currency"));
 
 		// Convert json string to array
 		String json = extras.getString("arrayJSON");
@@ -91,18 +93,15 @@ public class StoreCustom extends AndroidApplication {
 		final PurchaseData[] customData = gson.fromJson(json,
 				PurchaseData[].class);
 
-		// Assign preference strings to be used later
-		pref1 = extras.getString("pref1");
-		pref2 = extras.getString("pref2");
-		pref3 = extras.getString("pref3", "null");
-
 		// If preference three does exist, we need to adjust the layout
 		// Set the total weight to 3 so the columns are evenly spaced
 		// And adjust the weight of the third column so it is given space
-		if (pref3 != "null") {
-			colLayout.setWeightSum(3);
-			col3.setLayoutParams(new LinearLayout.LayoutParams(0,
-					LinearLayout.LayoutParams.MATCH_PARENT, 1.0f));
+		for (int i = 0; i < customData.length; i++) {
+			if (customData[i].group == 3) {
+				colLayout.setWeightSum(3);
+				col3.setLayoutParams(new LinearLayout.LayoutParams(0,
+						LinearLayout.LayoutParams.MATCH_PARENT, 1.0f));
+			}
 		}
 
 		// Traverse through our custom array
@@ -133,22 +132,20 @@ public class StoreCustom extends AndroidApplication {
 			switch (customData[i].group) {
 			case 1:
 				col1.addView(button);
-				customPref = pref1;
 				break;
 			case 2:
 				col2.addView(button);
-				customPref = pref2;
 				break;
 			case 3:
 				col3.addView(button);
-				customPref = pref3;
 				break;
 			}
 
 			// Add listeners after checking if an upgrade has already been
 			// purchased
-			final int prefInt = playerData.prefs.getInteger(customPref);
+			final int prefInt = playerData.prefs.getInteger(customData[i].key);
 			if (customData[i].tier <= prefInt) {
+				button.setAlpha(0.33f);
 				button.setOnClickListener(new Button.OnClickListener() {
 					public void onClick(View v) {
 						toast = Toast.makeText(getApplicationContext(),
@@ -160,27 +157,51 @@ public class StoreCustom extends AndroidApplication {
 				button.setOnClickListener(new Button.OnClickListener() {
 					public void onClick(View v) {
 						setTask(customData[x].name, customData[x].description,
-								customData[x].cost, customData[x].tier, prefInt);
+								customData[x].key, customData[x].cost,
+								customData[x].tier, prefInt);
 						viewAnimator.showNext();
 					}
 				});
 			}
 		}
-		
-		//Add listeners for back and confirm buttons
+
+		// Add listeners for back and confirm buttons
+		exitButton.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				startActivity(new Intent(StoreCustom.this, Store.class));
+			}
+		});
+
 		backButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				viewAnimator.showPrevious();
 			}
 		});
-		
+
 		confirmButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
-				//TO-DO
-				if(!checkPreReq(ownedTier, purchaseTier)){
-					AlertDialog builder1 = new AlertDialog.Builder(getContext()).setTitle("Error").setMessage("Do not own required prerequisites.").setNeutralButton("Close", null).show();
+				// TO-DO
+				if (!checkPreReq(ownedTier, purchaseTier)) {
+					AlertDialog builder = new AlertDialog.Builder(getContext())
+							.setTitle("Error")
+							.setMessage("Do not own required prerequisites.")
+							.setNeutralButton("Close", null).show();
+				} else if (!checkCost(purchaseCost,
+						playerData.prefs.getInteger("currency"))) {
+					AlertDialog builder = new AlertDialog.Builder(getContext())
+							.setTitle("Error")
+							.setMessage("Do not own enough Space Coins.")
+							.setNeutralButton("Close", null).show();
+				} else {
+					purchaseUpgrade(purchaseKey, purchaseTier, purchaseCost);
+					// viewAnimator.showPrevious();
+					recreate();
+					AlertDialog builder = new AlertDialog.Builder(getContext())
+							.setTitle("Success")
+							.setMessage(
+									"You have purchased " + purchaseDesc + ".")
+							.setNeutralButton("Close", null).show();
 				}
-				checkCost(purchaseCost, playerData.prefs.getInteger("currency"));
 			}
 		});
 
@@ -190,9 +211,11 @@ public class StoreCustom extends AndroidApplication {
 	 * Assign variables and set TextView text to be used on the confirm purchase
 	 * screen
 	 */
-	public void setTask(String name, String description, int cost, int tier, int tier_owned) {
+	public void setTask(String name, String description, String key, int cost,
+			int tier, int tier_owned) {
 		purchaseName = name;
 		purchaseDesc = description;
+		purchaseKey = key;
 		purchaseCost = cost;
 		purchaseTier = tier;
 		ownedTier = tier_owned;
@@ -201,22 +224,28 @@ public class StoreCustom extends AndroidApplication {
 		desc_view.setText(description);
 		cost_view.setText("" + cost);
 	}
-	
-	public boolean checkPreReq(int ownedTier, int purchaseTier){
-		
-		if(purchaseTier > ownedTier+1){
+
+	public boolean checkPreReq(int ownedTier, int purchaseTier) {
+
+		if (purchaseTier > ownedTier + 1) {
 			return false;
-		}
+		} else
+			return true;
+	}
+
+	public boolean checkCost(int purchaseCost, int currency) {
+
+		if (currency < purchaseCost)
+			return false;
 		else
 			return true;
 	}
-	
-	public boolean checkCost(int purchaseCost, int currency){
-		
-		if(currency < purchaseCost)
-			return false;
-		else
-			return true;
+
+	public void purchaseUpgrade(String key, int tier, int cost) {
+		playerData.prefs.putInteger(key, tier);
+		int current = playerData.prefs.getInteger("currency");
+		playerData.prefs.putInteger("currency", (current - cost));
+		playerData.prefs.flush();
 	}
 
 	@Override
@@ -227,6 +256,11 @@ public class StoreCustom extends AndroidApplication {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+	}
+
+	@Override
+	public void onBackPressed() {
+		startActivity(new Intent(StoreCustom.this, Store.class));
 	}
 
 }

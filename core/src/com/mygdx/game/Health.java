@@ -21,11 +21,11 @@ public class Health {
 	}
 
 	public void setHealth(int h, GameData gameData) {
-		if (gameData.player_health > 10)
-			gameData.player_health = 10;
+		if (h > gameData.max_health)
+			h = gameData.max_health;
 
 		health = Assets.health_5;
-		switch (gameData.player_health) {
+		switch (h) {
 		case 10:
 			extraHealth = Assets.extrahealth_5;
 			break;

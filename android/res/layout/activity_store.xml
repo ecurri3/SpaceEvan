@@ -1,37 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <Button
-        android:id="@+id/missile"
-        android:layout_width="fill_parent"
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Missile Upgrades"
-        />
-    
-    <Button
-        android:id="@+id/health"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Health Upgrades"
-        />
-    
-    <Button
-        android:id="@+id/rapid"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Rapid Fire Upgrades"
-        />
-    
-    <Button
-        android:id="@+id/multi"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Multi Shot Upgrades"
-        />
-    
+        android:layout_gravity="center_horizontal"
+        android:text="@string/store_title"
+        android:textColor="#ffff00"
+        android:textSize="60sp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <Button
+                android:id="@+id/missile"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Missile Upgrades" />
+
+            <Button
+                android:id="@+id/health"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Health Upgrades" />
+            
+            <Button
+                android:id="@+id/power"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="General Powerup Upgrades" />
+
+            <Button
+                android:id="@+id/rapid"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Rapid Fire Upgrades" />
+
+            <Button
+                android:id="@+id/multi"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Multi Shot Upgrades" />
+            
+            <Button
+                android:id="@+id/shotgun"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Shotgun Upgrades" />
+            
+            <Button
+                android:id="@+id/auto"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Auto Fire Upgrades" />
+            
+            <Button
+                android:id="@+id/swiftness"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Swiftness Upgrades" />
+            
+            <Button
+                android:id="@+id/big"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Big Ammo Upgrades" />
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

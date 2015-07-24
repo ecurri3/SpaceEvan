@@ -48,7 +48,7 @@ public class GameOverScreen extends ApplicationAdapter implements Screen {
 
 		camera = new OrthographicCamera();
 		// 934, 590 was the dimensions of the background created on Paint
-		camera.setToOrtho(true, 1920, 1180);
+		camera.setToOrtho(true, 1920, 1080);
 
 		font48 = new BitmapFont();
 		font48.getRegion().getTexture()
@@ -92,7 +92,7 @@ public class GameOverScreen extends ApplicationAdapter implements Screen {
 		score = "" + GameScreen.score;
 
 		coinsEarned_int = GameScreen.coinsEarned;
-		newCurrency = MenuScreen.getCurrency();
+		newCurrency = PlayerData.getCurrency();
 		previousCurrency = newCurrency - coinsEarned_int;
 
 		font48 = Assets.font48;
@@ -181,7 +181,9 @@ public class GameOverScreen extends ApplicationAdapter implements Screen {
 						font36.setColor(Color.YELLOW);
 						
 						game.gameOver_screen.dispose();
-						game.setScreen(game.menu_screen);
+						game.gameOver_screen.hide();
+						game.setScreen(game.switcher);
+						System.exit(0);
 					}
 				}
 			}

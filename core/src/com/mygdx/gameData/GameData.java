@@ -18,6 +18,9 @@ public class GameData {
 	public boolean mirrorTwins;
 	public boolean ricochet;
 	public boolean multi_extra;
+	public boolean cannons;
+	public boolean slow_time;
+	public boolean static_shield;
 
 	// mirror chance is the chance to spawn Mirror Image
 	public int mirrorChance = 0;
@@ -35,6 +38,18 @@ public class GameData {
 	// shotgun landmine upgrade
 	public boolean landmine = false;
 	public int landmineChance = 0;
+	
+	public boolean autoCannon = false;
+	public int autoCannonChance = 0;
+	
+	public boolean swiftnessShield = false;
+	public int swiftnessShieldChance = 0;
+	
+	public boolean slowTime = false;
+	public int slowTimeAmount = 0;
+	
+	public boolean bigExplosion = false;
+	public int bigExplosionChance = 0;
 
 	/*
 	 * Power-Up Booleans
@@ -47,6 +62,7 @@ public class GameData {
 	public boolean bigAmmo;
 
 	public int player_health = 5;
+	public int max_health = 5;
 
 	public GameData() {
 
