@@ -27,25 +27,6 @@ public class UserInterface {
 		image = background;
 		bounds = new Rectangle(0, 0, 1920, 1080);
 	}
-
-	public TextButton createFireButton(Stage stage, String downKey, String upKey, String downImage, String upImage,
-									   BitmapFont font, int xPos, int yPos, int height, int width) {
-		fireButtonSkin = new Skin();
-		fireButtonSkin.add("fireButtonDown", new Texture("FB_down.png"));
-		fireButtonSkin.add("fireButtonUp", new Texture("FB_up.png"));
-		TextButtonStyle style = new TextButtonStyle(); // ** Button properties
-		// **//
-		style.font = Assets.font12;
-		style.up = fireButtonSkin.getDrawable("fireButtonUp");
-		style.down = fireButtonSkin.getDrawable("fireButtonDown");
-		fireButton = new TextButton("", style); // ** Button text and style **//
-		fireButton.setPosition(1315, 100); // ** Button location **//
-		fireButton.setHeight(150); // ** Button Height **//
-		fireButton.setWidth(590); // ** Button Width **//
-		
-		return fireButton;
-
-	}
 	
 	public TextButton createButton(Stage stage, String downKey, String upKey, String downImage, String upImage,
 			   BitmapFont font, int xPos, int yPos, int height, int width) {

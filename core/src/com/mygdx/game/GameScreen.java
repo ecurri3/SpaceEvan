@@ -190,7 +190,7 @@ public class GameScreen implements Screen {
 		Gdx.input.setInputProcessor(stage); // ** stage is responsive **//
 
 		fireButton = userInterface.createButton(stage, "fireButtonDown",
-				"fireButtonUp", "FB_down.png", "FB_up.png", Assets.font12,
+				"fireButtonUp", "images/interface/FB_down.png", "images/interface/FB_up.png", Assets.font12,
 				1315, 15, 150, 590);
 		fireButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
@@ -207,7 +207,7 @@ public class GameScreen implements Screen {
 		stage.addActor(fireButton);
 
 		leftButton = userInterface.createButton(stage, "leftButtonDown",
-				"leftButtonUp", "LB_down.png", "LB_up.png", Assets.font12, 20,
+				"leftButtonUp", "images/interface/LB_down.png", "images/interface/LB_up.png", Assets.font12, 20,
 				20, 140, 290);
 		leftButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
@@ -224,7 +224,7 @@ public class GameScreen implements Screen {
 		stage.addActor(leftButton);
 
 		rightButton = userInterface.createButton(stage, "rightButtonDown",
-				"rightButtonUp", "RB_down.png", "RB_up.png", Assets.font12,
+				"rightButtonUp", "images/interface/RB_down.png", "images/interface/RB_up.png", Assets.font12,
 				310, 20, 140, 290);
 		rightButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
@@ -241,7 +241,7 @@ public class GameScreen implements Screen {
 		stage.addActor(rightButton);
 
 		pauseButton = userInterface.createButton(stage, "pauseButtonDown",
-				"pauseButtonUp", "PB_down.png", "PB_up.png", Assets.font12,
+				"pauseButtonUp", "images/interface/PB_down.png", "images/interface/PB_up.png", Assets.font12,
 				825, 100, 70, 155);
 		pauseButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
