@@ -13,11 +13,12 @@ public class Player {
 	public Sprite player;
 	public Sprite missileShip;
 	public Sprite bulletShip;
-	public Sprite shield;
+	public Sprite shield, flame;
 	public Rectangle bounds;
 	public Circle shield_bounds;
-	public TextureRegion current_frame;
+	public TextureRegion current_frame, current_frame_flame;
 	public Animation static_animation;
+	public Animation flame_animation;
 	public float rotation;
 
 	public Player() {
@@ -27,6 +28,7 @@ public class Player {
 		bounds = new Rectangle(880, 740, 160, 160);
 		shield_bounds = new Circle(bounds.x + 80f, bounds.y + 80f, 100f);
 		static_animation = Assets.static_animation;
+		flame_animation = Assets.flame_animation;
 		rotation = 0;
 	}
 
@@ -34,14 +36,20 @@ public class Player {
 		batch.draw(player, bounds.x, bounds.y);
 	}
 
-	public void drawR(SpriteBatch batch, float d, GameData gameData) {
+	public void drawR(SpriteBatch batch, float d, float time, GameData gameData) {
 		if (d > 90)
 			d = 90;
 		else if (d < -90)
 			d = -90;
 
+		current_frame_flame = flame_animation.getKeyFrame(time, true);
+		flame = new Sprite(current_frame_flame);
+
 		batch.draw(player, bounds.x, bounds.y, player.getOriginX(),
 				player.getOriginY(), 160, 160, 1, 1, d);
+
+		batch.draw(current_frame_flame, bounds.x, bounds.y,
+				player.getOriginX(), player.getOriginY(), 160, 160, 1, 1, d);
 
 		if (gameData.mirrorTwins) {
 			batch.draw(missileShip, bounds.x - 150, bounds.y + 60,
@@ -63,7 +71,7 @@ public class Player {
 
 		current_frame = static_animation.getKeyFrame(time, true);
 		shield = new Sprite(current_frame);
-		
+
 		if (!paused) {
 			batch.draw(current_frame, shield_bounds.x - 100f,
 					shield_bounds.y - 100f, shield.getOriginX(),

@@ -106,8 +106,8 @@ public class GameScreen implements Screen {
 	 */
 	boolean control_tilt;
 	boolean control_button;
-	boolean sound_on;
-	boolean sound_off;
+
+	boolean expertMode;
 
 	/*
 	 * Arrays to keep track of individual enemies, missiles, and so on
@@ -127,9 +127,10 @@ public class GameScreen implements Screen {
 	/*
 	 * GameScreen constructor
 	 */
-	public GameScreen(MyGame game) {
+	public GameScreen(MyGame game, boolean expert) {
 
 		this.game = game;
+		expertMode = expert;
 
 		camera = new OrthographicCamera();
 		// Dimensions of the screen
@@ -166,16 +167,9 @@ public class GameScreen implements Screen {
 		score = 0;
 		newHighScore = false;
 
-		// Control Scheme Options
-		if (PlayerData.prefs.getString("control_option").equals("tilt")) {
-			control_tilt = true;
-			control_button = false;
-			userInterface = new UserInterface(Assets.sprite_back);
-		} else {
-			control_tilt = false;
-			control_button = true;
-			userInterface = new UserInterface(Assets.sprite_control_button_back);
-		}
+		control_tilt = false;
+		control_button = true;
+		userInterface = new UserInterface(Assets.sprite_control_button_back);
 
 		// Load current high score
 		highScore = getHighScore();
@@ -189,9 +183,11 @@ public class GameScreen implements Screen {
 		stage.clear();
 		Gdx.input.setInputProcessor(stage); // ** stage is responsive **//
 
-		fireButton = userInterface.createButton(stage, "fireButtonDown",
-				"fireButtonUp", "images/interface/FB_down.png", "images/interface/FB_up.png", Assets.font12,
-				1315, 15, 150, 590);
+		fireButton = userInterface
+				.createButton(stage, "fireButtonDown", "fireButtonUp",
+						"images/interface/FB_down.png",
+						"images/interface/FB_up.png", Assets.font12, 1315, 15,
+						150, 590);
 		fireButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -207,8 +203,8 @@ public class GameScreen implements Screen {
 		stage.addActor(fireButton);
 
 		leftButton = userInterface.createButton(stage, "leftButtonDown",
-				"leftButtonUp", "images/interface/LB_down.png", "images/interface/LB_up.png", Assets.font12, 20,
-				20, 140, 290);
+				"leftButtonUp", "images/interface/LB_down.png",
+				"images/interface/LB_up.png", Assets.font12, 20, 20, 140, 290);
 		leftButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -224,8 +220,8 @@ public class GameScreen implements Screen {
 		stage.addActor(leftButton);
 
 		rightButton = userInterface.createButton(stage, "rightButtonDown",
-				"rightButtonUp", "images/interface/RB_down.png", "images/interface/RB_up.png", Assets.font12,
-				310, 20, 140, 290);
+				"rightButtonUp", "images/interface/RB_down.png",
+				"images/interface/RB_up.png", Assets.font12, 310, 20, 140, 290);
 		rightButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -241,8 +237,8 @@ public class GameScreen implements Screen {
 		stage.addActor(rightButton);
 
 		pauseButton = userInterface.createButton(stage, "pauseButtonDown",
-				"pauseButtonUp", "images/interface/PB_down.png", "images/interface/PB_up.png", Assets.font12,
-				825, 100, 70, 155);
+				"pauseButtonUp", "images/interface/PB_down.png",
+				"images/interface/PB_up.png", Assets.font12, 825, 100, 70, 155);
 		pauseButton.addListener(new InputListener() {
 			public boolean touchDown(InputEvent event, float x, float y,
 					int pointer, int button) {
@@ -378,10 +374,6 @@ public class GameScreen implements Screen {
 		if (gameData.swiftnessPower)
 			factor = 1.15;
 
-		if (control_tilt) {
-			accelY = Gdx.input.getAccelerometerY();
-			computeMovement(accelY);
-		}
 		if (control_button) {
 			if (leftButtonBool)
 				accelerationX -= 1.5 * factor;
@@ -454,71 +446,24 @@ public class GameScreen implements Screen {
 	 * Checks for all collisions between all sprites
 	 */
 	public void checkCollision() {
-		for (Missile m : missiles) {
-			for (Enemy e : enemies) {
+
+		for (Enemy e : enemies) {
+			// Check Missiles
+			for (Missile m : missiles) {
 				if (Intersector.overlaps(e.Cbounds, m.bounds)) {
-
-					e.health--;
-					if (e.health <= 0) {
-						if (e.normal)
-							score++;
-						if (e.gold)
-							score += 15;
-						if (e.strong)
-							score += 8;
-						enemies.removeValue(e, false);
-					}
+					checkStatus(e);
 					missiles.removeValue(m, false);
-					explosionSound(m.bounds.x, m.bounds.y);
-
-					if (gameData.bigAmmo) {
-						if (gameData.bigExplosion) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (gameData.bigExplosionChance)) {
-								spawnBigExplosion(m.bounds);
-							}
-						}
-					}
-
-					// If ricochet is active
-					if (gameData.rapidFire) {
-						if (gameData.ricochet) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (gameData.ricochetChance * 10))
-								spawnRicochet(m.bounds);
-						}
-					}
+					explosionAdd(m.bounds.x, m.bounds.y);
+					checkBigAmmo(m.bounds.x, m.bounds.y);
+					checkRapidFire(m.bounds.x, m.bounds.y);
 				}
 			}
-			for (Powerup p : powerups) {
-				if (Intersector.overlaps(p.Cbounds, m.bounds)) {
-					// POWERUP
-					p.executePowerUp(gameData, gameTimers, p.numType);
-					missiles.removeValue(m, false);
-					powerups.removeValue(p, false);
-				}
-				if (Intersector.overlaps(p.Cbounds, player.bounds)) {
-					// POWERUP
-					p.executePowerUp(gameData, gameTimers, p.numType);
-					powerups.removeValue(p, false);
-				}
-			}
-		}
-		for (Bullet b : bullets) {
-			for (Enemy e : enemies) {
+			// Check Bullets
+			for (Bullet b : bullets) {
 				if (Intersector.overlaps(e.Cbounds, b.bounds)) {
 
-					e.health--;
-					if (e.health <= 0) {
-						if (e.normal)
-							score++;
-						if (e.gold)
-							score += 15;
-						if (e.strong)
-							score += 8;
-						enemies.removeValue(e, false);
-					}
-					explosionSound(b.bounds.x, b.bounds.y);
+					checkStatus(e);
+					explosionAdd(b.bounds.x, b.bounds.y);
 
 					if (gameData.shotgun_pierce) {
 						int chance = rand.nextInt(100) + 1;
@@ -534,25 +479,63 @@ public class GameScreen implements Screen {
 							landmines.add(new Landmine(b.bounds.x, b.bounds.y));
 					}
 
-					if (gameData.bigAmmo) {
-						if (gameData.bigExplosion) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (gameData.bigExplosionChance)) {
-								spawnBigExplosion(b.bounds);
-							}
-						}
+					checkBigAmmo(b.bounds.x, b.bounds.y);
+					checkRapidFire(b.bounds.x, b.bounds.y);
+				}
+			}
+			// Check Landmines
+			for (Landmine l : landmines) {
+				if (Intersector.overlaps(e.Cbounds, l.Cbounds)) {
+					checkStatus(e);
+					spawnBigExplosion(l.Cbounds.x, l.Cbounds.y);
+					landmines.removeValue(l, false);
+				}
+			}
+			// Check Player in Expert Mode
+			if (expertMode) {
+				if (Intersector.overlaps(e.Cbounds, player.bounds)) {
+					if (!e.hitPlayer) {
+						gameData.player_health--;
+						healthUsed++;
+						e.hitPlayer = true;
 					}
-
-					if (gameData.rapidFire) {
-						if (gameData.ricochet) {
-							int chance = rand.nextInt(100) + 1;
-							if (chance <= (gameData.ricochetChance * 10))
-								spawnRicochet(b.bounds);
+				}
+			}
+			// Check Big Explosions
+			for (Explosion x : explosions) {
+				if (x.big) {
+					if (Intersector.overlaps(x.cBounds, e.Cbounds)) {
+						if (!e.hitByExplosion) {
+							e.health--; // Do extra damage
+							checkStatus(e);
+							e.hitByExplosion = true;
 						}
 					}
 				}
 			}
-			for (Powerup p : powerups) {
+			// Check Static Shield
+			if (gameData.static_shield) {
+				if (Intersector.overlaps(e.Cbounds, player.shield_bounds)) {
+					if (Intersector.overlaps(e.Cbounds, player.shield_bounds)) {
+						if (!e.hitByShield) {
+							checkStatus(e);
+							explosionAdd(-100, -100);
+							e.hitByShield = true;
+						}
+					}
+				}
+			}
+		}
+		for (Powerup p : powerups) {
+			for (Missile m : missiles) {
+				if (Intersector.overlaps(p.Cbounds, m.bounds)) {
+					// POWERUP
+					p.executePowerUp(gameData, gameTimers, p.numType);
+					missiles.removeValue(m, false);
+					powerups.removeValue(p, false);
+				}
+			}
+			for (Bullet b : bullets) {
 				if (Intersector.overlaps(p.Cbounds, b.bounds)) {
 					// POWERUP
 					p.executePowerUp(gameData, gameTimers, p.numType);
@@ -560,61 +543,58 @@ public class GameScreen implements Screen {
 					powerups.removeValue(p, false);
 				}
 			}
-		}
-		for (Landmine l : landmines) {
-			for (Enemy e : enemies) {
-				if (Intersector.overlaps(e.Cbounds, l.Cbounds)) {
-
-					e.health--;
-					if (e.health <= 0) {
-						if (e.normal)
-							score++;
-						if (e.gold)
-							score += 15;
-						if (e.strong)
-							score += 8;
-						enemies.removeValue(e, false);
-					}
-					explosionSound(l.Cbounds.x, l.Cbounds.y);
-					landmines.removeValue(l, false);
-
-				}
+			if (Intersector.overlaps(p.Cbounds, player.bounds)) {
+				// POWERUP
+				p.executePowerUp(gameData, gameTimers, p.numType);
+				powerups.removeValue(p, false);
 			}
 		}
-		for (Explosion x : explosions) {
-			if (x.big) {
-				for (Enemy e : enemies) {
-					if (Intersector.overlaps(x.cBounds, e.Cbounds)) {
-
-						e.health--;
-						if (e.health <= 0) {
-							if (e.normal)
-								score++;
-							if (e.gold)
-								score += 15;
-							if (e.strong)
-								score += 8;
-							enemies.removeValue(e, false);
+		if (expertMode) {
+			for (Missile m : missiles) {
+				if (m.shotByEnemy) {
+					if (!m.hitPlayer) {
+						if (Intersector.overlaps(player.bounds, m.bounds)) {
+							gameData.player_health--;
+							healthUsed++;
+							explosionAdd(m.bounds.x - 48, m.bounds.y);
+							missiles.removeValue(m, false);
 						}
 					}
 				}
 			}
 		}
-		if (gameData.static_shield) {
-			for (Enemy e : enemies) {
-				if (Intersector.overlaps(e.Cbounds, player.shield_bounds)) {
-					e.health--;
-					if (e.health <= 0) {
-						if (e.normal)
-							score++;
-						if (e.gold)
-							score += 15;
-						if (e.strong)
-							score += 8;
-						enemies.removeValue(e, false);
-					}
-					explosionSound(-100, -100);
+	}
+
+	public void checkStatus(Enemy e) {
+		e.health--;
+		if (e.health <= 0) {
+			if (e.normal)
+				score++;
+			if (e.gold)
+				score += 15;
+			if (e.strong)
+				score += 8;
+			enemies.removeValue(e, false);
+		}
+	}
+
+	public void checkBigAmmo(float x, float y) {
+		if (gameData.bigAmmo) {
+			if (gameData.bigExplosion) {
+				int chance = rand.nextInt(100) + 1;
+				if (chance <= (gameData.bigExplosionChance)) {
+					spawnBigExplosion(x, y);
 				}
+			}
+		}
+	}
+
+	public void checkRapidFire(float x, float y) {
+		if (gameData.rapidFire) {
+			if (gameData.ricochet) {
+				int chance = rand.nextInt(100) + 1;
+				if (chance <= (gameData.ricochetChance * 10))
+					spawnRicochet(x, y);
 			}
 		}
 	}
@@ -623,7 +603,13 @@ public class GameScreen implements Screen {
 	 * Updates movement of missiles
 	 */
 	public void missileUpdate(Missile missile) {
-		missile.bounds.y -= 25;
+		if (expertMode) {
+			if (missile.shotByEnemy)
+				missile.bounds.y += 17.5;
+			else
+				missile.bounds.y -= 25;
+		} else
+			missile.bounds.y -= 25;
 
 		batch.draw(missile.image, missile.bounds.x, missile.bounds.y);
 	}
@@ -644,9 +630,12 @@ public class GameScreen implements Screen {
 	public void enemyUpdate(Enemy enemy) {
 
 		double factor = 1.0;
+		if (expertMode)
+			factor = 1.15;
+
 		if (gameData.slow_time)
-			factor = 1.0 - (0.1 * PlayerData.prefs
-					.getInteger("swiftnessUpTime"));
+			factor = factor
+					- (0.1 * PlayerData.prefs.getInteger("swiftnessUpTime"));
 
 		if (enemy.normal) {
 			enemy.Cbounds.y += 3.25 * factor;
@@ -772,13 +761,14 @@ public class GameScreen implements Screen {
 		}
 
 		// Player
-		player.drawR(batch, rotation, gameData);
+		stateTime += Gdx.graphics.getDeltaTime();
+		player.drawR(batch, rotation, stateTime, gameData);
 
 		if (gameData.static_shield) {
 			stateTime += Gdx.graphics.getDeltaTime();
 			player.drawShield(batch, stateTime, paused);
 		}
-		
+
 		if (gameData.explosionBool) {
 			for (Explosion e : explosions) {
 				if (e.big)
@@ -814,7 +804,7 @@ public class GameScreen implements Screen {
 		for (Landmine l : landmines) {
 			batch.draw(l.image, l.Cbounds.x - 30, l.Cbounds.y - 30);
 		}
-		
+
 		userInterface.draw(batch);
 
 		// Health Bar
@@ -865,14 +855,19 @@ public class GameScreen implements Screen {
 			setHighScore(score);
 		}
 
-		playerData.setCurrency(score * 2);
+		if (expertMode) {
+			playerData.setCurrency(score * 4);
+			coinsEarned = score * 4;
+		} else {
+			playerData.setCurrency(score * 2);
+			coinsEarned = score * 2;
+		}
 
-		coinsEarned = score * 2;
 		long gameEnd = gameTimers.getNanoTime();
 		timeElapsed = (int) (gameEnd - gameTimers.gameStart) / 100;
 
 		gameData.player_health = 5;
-		enemySpawnRate = 150;
+		enemySpawnRate = 200;
 		accelerationX = 0;
 		yourScoreName = "0";
 
@@ -913,13 +908,15 @@ public class GameScreen implements Screen {
 		/*
 		 * Adjust the spawn rate of enemies as the score gets higher
 		 */
-		enemySpawnRate = 200 - ((score / 25) * 5);
-		if (enemySpawnRate < 50)
-			enemySpawnRate = 50;
-
-		// USE THIS MAYBE
-		// enemySpawnRate = ((200 - ((score/25)*5)) >= 50) ? 200 -
-		// ((score/25)*5) : 50;
+		if (expertMode) {
+			enemySpawnRate = 100 - ((score / 15) * 5);
+			if (enemySpawnRate < 15)
+				enemySpawnRate = 15;
+		} else {
+			enemySpawnRate = 200 - ((score / 25) * 5);
+			if (enemySpawnRate < 50)
+				enemySpawnRate = 50;
+		}
 
 		if (gameData.healthRegen) {
 			gameTimers.healthRegen_end = gameTimers.getNanoTime();
@@ -1007,9 +1004,31 @@ public class GameScreen implements Screen {
 		if (gameTimers.enemyDur >= enemySpawnRate) {
 			int spawnArea = rand.nextInt(1752) + 52;
 			int chooseEnemy = rand.nextInt(20) + 1;
-			enemies.add(new Enemy(spawnArea, chooseEnemy));
+			enemies.add(new Enemy(spawnArea, chooseEnemy, expertMode));
 			gameTimers.enemyStart = gameTimers.enemyEnd;
 		}
+
+		/*
+		 * This function will add the ability for enemy spaceships to shoot
+		 * missiles This is to be used in Expert Mode only
+		 * 
+		 * The reason it is disabled is because, in its current form, feels to
+		 * difficult to properly play against
+		 */
+		
+		/*
+		if (expertMode) {
+			for (Enemy e : enemies) {
+				e.reloadEnd = gameTimers.getNanoTime();
+				e.reloadDur = e.reloadEnd - e.reloadStart;
+				if (e.reloadDur >= gameTimers.enemyReloadTime) {
+					missiles.add(new Missile(e.Cbounds.x, e.Cbounds.y,
+							e.yOffset));
+					e.reloadStart = e.reloadEnd;
+				}
+			}
+		}
+		*/
 
 		gameTimers.endTime = gameTimers.getNanoTime();
 		gameTimers.duration = gameTimers.endTime - gameTimers.startTime;
@@ -1216,31 +1235,31 @@ public class GameScreen implements Screen {
 	/*
 	 * Spawns a ricochet explosion
 	 */
-	public void spawnRicochet(Rectangle bounds) {
+	public void spawnRicochet(float x, float y) {
 
-		bullets.add(new Bullet(bounds.x, bounds.y, -16, -16));
-		bullets.add(new Bullet(bounds.x, bounds.y, 16, -16));
-		bullets.add(new Bullet(bounds.x, bounds.y, 16, 16));
-		bullets.add(new Bullet(bounds.x, bounds.y, -16, 16));
+		bullets.add(new Bullet(x, y, -16, -16));
+		bullets.add(new Bullet(x, y, 16, -16));
+		bullets.add(new Bullet(x, y, 16, 16));
+		bullets.add(new Bullet(x, y, -16, 16));
 
-		bullets.add(new Bullet(bounds.x, bounds.y, 0, -24));
-		bullets.add(new Bullet(bounds.x, bounds.y, 0, -24));
-		bullets.add(new Bullet(bounds.x, bounds.y, 24, 0));
-		bullets.add(new Bullet(bounds.x, bounds.y, -24, 0));
+		bullets.add(new Bullet(x, y, 0, -24));
+		bullets.add(new Bullet(x, y, 0, -24));
+		bullets.add(new Bullet(x, y, 24, 0));
+		bullets.add(new Bullet(x, y, -24, 0));
 
-		bullets.add(new Bullet(bounds.x, bounds.y, -8, -20));
-		bullets.add(new Bullet(bounds.x, bounds.y, 8, -20));
-		bullets.add(new Bullet(bounds.x, bounds.y, 20, 8));
-		bullets.add(new Bullet(bounds.x, bounds.y, -20, 8));
+		bullets.add(new Bullet(x, y, -8, -20));
+		bullets.add(new Bullet(x, y, 8, -20));
+		bullets.add(new Bullet(x, y, 20, 8));
+		bullets.add(new Bullet(x, y, -20, 8));
 
-		bullets.add(new Bullet(bounds.x, bounds.y, -20, -8));
-		bullets.add(new Bullet(bounds.x, bounds.y, 20, -8));
-		bullets.add(new Bullet(bounds.x, bounds.y, 8, 20));
-		bullets.add(new Bullet(bounds.x, bounds.y, -8, 20));
+		bullets.add(new Bullet(x, y, -20, -8));
+		bullets.add(new Bullet(x, y, 20, -8));
+		bullets.add(new Bullet(x, y, 8, 20));
+		bullets.add(new Bullet(x, y, -8, 20));
 	}
 
-	public void spawnBigExplosion(Rectangle bounds) {
-		explosions.add(new Explosion(bounds.x, bounds.y, true));
+	public void spawnBigExplosion(float x, float y) {
+		explosions.add(new Explosion(x, y, true));
 	}
 
 	/*
@@ -1365,7 +1384,7 @@ public class GameScreen implements Screen {
 	/*
 	 * Plays a random explosion sound
 	 */
-	public void explosionSound(float x, float y) {
+	public void explosionAdd(float x, float y) {
 
 		gameData.explosionBool = true;
 		explosions.add(new Explosion(x, y, false));

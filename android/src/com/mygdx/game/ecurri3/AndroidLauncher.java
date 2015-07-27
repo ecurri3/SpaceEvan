@@ -27,6 +27,9 @@ public class AndroidLauncher extends AndroidApplication {
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.useAccelerometer = true;
 		config.useCompass = false;
+		
+		Bundle extras = getIntent().getExtras(); // Retrieve extras
+		boolean difficulty = extras.getBoolean("expertMode");
 
 		// Create the layout
 		RelativeLayout layout = new RelativeLayout(this);
@@ -39,7 +42,7 @@ public class AndroidLauncher extends AndroidApplication {
 				WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
 
 		// Create the libgdx View
-		View gameView = initializeForView(new MyGame(), config);
+		View gameView = initializeForView(new MyGame(difficulty), config);
 
 //		// Create and setup the AdMob view
 		//AdView adView = createAdView(); // Put in your secret key here

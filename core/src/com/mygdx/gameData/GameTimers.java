@@ -4,7 +4,7 @@ public class GameTimers {
 
 	// Used for easier calculations when determining timing of certain powerups,
 	// reloads, etc
-	public int nano = 10000000;
+	public static int nano = 10000000;
 
 	// Keeps track of the time the game started and ended
 	public long gameStart;
@@ -58,6 +58,11 @@ public class GameTimers {
 	public long enemyStart;
 	public long enemyEnd;
 	public long enemyDur;
+	
+	public long enemyReloadStart;
+	public long enemyReloadEnd;
+	public long enemyReloadDur;
+	public long enemyReloadTime = 150;
 
 	// Power Up spawn timer
 	public long powerStart = System.nanoTime() / nano;
@@ -110,6 +115,7 @@ public class GameTimers {
 		/* Begin Timers */
 		gameStart = System.nanoTime() / nano;
 		enemyStart = System.nanoTime() / nano;
+		enemyReloadStart = System.nanoTime() / nano;
 		powerStart = System.nanoTime() / nano;
 		autoShotStart = System.nanoTime() / nano;
 		healthRegen_start = System.nanoTime() / nano;

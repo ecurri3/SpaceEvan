@@ -1,6 +1,7 @@
 package com.mygdx.game.ecurri3;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -34,6 +35,7 @@ GameTimers gameTimers;
 		SpannableString content = new SpannableString("Upgrades");
 		content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
 		title.setText(content);
+		title.setTextColor(Color.YELLOW);
 		
 		final StoreData storeData = new StoreData();
 		

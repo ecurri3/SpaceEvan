@@ -1,22 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
-    
-    <Button
-        android:id="@+id/startButton"
-        android:layout_width="fill_parent"
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Game" 
-    	/>
-    
-    <Button 
-        android:id="@+id/storeButton"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Game Store"
-        />"
-    
+        android:layout_gravity="center_horizontal"
+        android:text="Space Evan"
+        android:textColor="#ffff00"
+        android:textSize="72sp" />
+
+    <ViewAnimator
+        android:id="@+id/viewAnimator"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="2" >
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/startButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="60sp"
+                android:paddingRight="60sp"
+                android:text="Start Game" />
+
+            <Button
+                android:id="@+id/storeButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="60sp"
+                android:paddingRight="60sp"
+                android:text="Game Store" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="3" >
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <Button
+                android:id="@+id/normalMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="60sp"
+                android:paddingRight="60sp"
+                android:text="Normal Mode" />
+
+            <Button
+                android:id="@+id/expertMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:paddingLeft="60sp"
+                android:paddingRight="60sp"
+                android:text="Expert Mode" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+            
+            <Button 
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_weight="1" 
+                android:paddingLeft="60sp"
+                android:paddingRight="60sp"
+                android:text="Back"/>
+        </LinearLayout>
+    </ViewAnimator>
+
 </LinearLayout>

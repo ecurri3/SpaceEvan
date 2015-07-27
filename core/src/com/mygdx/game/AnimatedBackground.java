@@ -32,7 +32,7 @@ public class AnimatedBackground {
 		if (bounds3.y <= 1080) {
 			batch.draw(image3, bounds3.x, bounds3.y);
 		}
-		if (bounds3.y > 0) {
+		if (bounds3.y > -10) {
 			// reset all backgrounds
 			bounds.y = -1080;
 			bounds2.y = -3238;

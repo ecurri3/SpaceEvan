@@ -160,6 +160,7 @@ public class Assets {
 	public static Animation big_explosion_animation;
 	public static Animation static_animation;
 	public static Animation back_animation;
+	public static Animation flame_animation;
 
 	public static Texture player_sheet;
 	public static TextureRegion[] player_frames;
@@ -368,30 +369,37 @@ public class Assets {
 		missile_twin = new Sprite(texture_missile_twin);
 		missile_twin.flip(false, true);
 
-		texture_bullet_twin = new Texture(Gdx.files.internal("images/player/bullet_twin.png"));
+		texture_bullet_twin = new Texture(
+				Gdx.files.internal("images/player/bullet_twin.png"));
 		bullet_twin = new Sprite(texture_bullet_twin);
 		bullet_twin.flip(false, true);
 
-		texture_missile = new Texture(Gdx.files.internal("images/missile/missile.png"));
+		texture_missile = new Texture(
+				Gdx.files.internal("images/missile/missile.png"));
 		missile = new Sprite(texture_missile);
 
-		texture_bigmissile = new Texture(Gdx.files.internal("images/missile/bigmissile.png"));
+		texture_bigmissile = new Texture(
+				Gdx.files.internal("images/missile/bigmissile.png"));
 		bigmissile = new Sprite(texture_bigmissile);
 
-		texture_bullet = new Texture(Gdx.files.internal("images/bullet/bullet.png"));
+		texture_bullet = new Texture(
+				Gdx.files.internal("images/bullet/bullet.png"));
 		bullet = new Sprite(texture_bullet);
 
-		texture_bigbullet = new Texture(Gdx.files.internal("images/bullet/bigbullet.png"));
+		texture_bigbullet = new Texture(
+				Gdx.files.internal("images/bullet/bigbullet.png"));
 		bigbullet = new Sprite(texture_bigbullet);
 
 		//
 		// ENEMY
 		//
-		texture_enemy = new Texture(Gdx.files.internal("images/enemies/enemy_circle.png"));
+		texture_enemy = new Texture(
+				Gdx.files.internal("images/enemies/enemy_circle.png"));
 		enemy = new Sprite(texture_enemy);
 		enemy.flip(false, true);
 
-		texture_gold_enemy = new Texture(Gdx.files.internal("images/enemies/gold_enemy.png"));
+		texture_gold_enemy = new Texture(
+				Gdx.files.internal("images/enemies/gold_enemy.png"));
 		gold_enemy = new Sprite(texture_gold_enemy);
 		gold_enemy.flip(false, true);
 
@@ -401,12 +409,14 @@ public class Assets {
 		strong_enemy.flip(false, true);
 
 		// landmine
-		texture_landmine = new Texture(Gdx.files.internal("images/bullet/landmine.png"));
+		texture_landmine = new Texture(
+				Gdx.files.internal("images/bullet/landmine.png"));
 		landmine = new Sprite(texture_landmine);
 		landmine.flip(false, true);
 
 		// cannon
-		texture_cannon = new Texture(Gdx.files.internal("images/player/cannon.png"));
+		texture_cannon = new Texture(
+				Gdx.files.internal("images/player/cannon.png"));
 		cannon = new Sprite(texture_cannon);
 		cannon.flip(false, true);
 
@@ -416,7 +426,8 @@ public class Assets {
 		powerup_rapid.flip(false, true);
 
 		texture_spray = new Texture(
-				Gdx.files.internal("images/powerups/powerup_shotgun_circle.png"));
+				Gdx.files
+						.internal("images/powerups/powerup_shotgun_circle.png"));
 		powerup_spray = new Sprite(texture_spray);
 		powerup_spray.flip(false, true);
 
@@ -436,11 +447,13 @@ public class Assets {
 		powerup_auto.flip(false, true);
 
 		texture_swiftness = new Texture(
-				Gdx.files.internal("images/powerups/powerup_swiftness_circle.png"));
+				Gdx.files
+						.internal("images/powerups/powerup_swiftness_circle.png"));
 		powerup_swiftness = new Sprite(texture_swiftness);
 		powerup_swiftness.flip(false, true);
 
-		texture_big = new Texture(Gdx.files.internal("images/powerups/powerup_big_circle.png"));
+		texture_big = new Texture(
+				Gdx.files.internal("images/powerups/powerup_big_circle.png"));
 		powerup_big = new Sprite(texture_big);
 		powerup_big.flip(false, true);
 
@@ -449,53 +462,84 @@ public class Assets {
 		gameover_screen = new Sprite(texture_gameover_screen);
 		gameover_screen.flip(false, true);
 
-		texture_pause = new Texture(Gdx.files.internal("images/interface/pause_screen.png"));
+		texture_pause = new Texture(
+				Gdx.files.internal("images/interface/pause_screen.png"));
 		texture_pause.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		pause = new Sprite(texture_pause);
 		pause.flip(false, true);
 
-		//
 		// Sound
-		//
-		select1 = Gdx.audio.newSound(Gdx.files.internal("sounds/buttons/select1.wav"));
-		select2 = Gdx.audio.newSound(Gdx.files.internal("sounds/buttons/select2.wav"));
-		fire1 = Gdx.audio.newSound(Gdx.files.internal("sounds/missile/fire1.wav"));
-		fire2 = Gdx.audio.newSound(Gdx.files.internal("sounds/missile/fire2.wav"));
-		fire3 = Gdx.audio.newSound(Gdx.files.internal("sounds/missile/fire3.wav"));
-		fire4 = Gdx.audio.newSound(Gdx.files.internal("sounds/missile/fire4.wav"));
-		fire5 = Gdx.audio.newSound(Gdx.files.internal("sounds/missile/fire5.wav"));
-		fire6 = Gdx.audio.newSound(Gdx.files.internal("sounds/missile/fire6.wav"));
-		explosion1 = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion/explosion1.wav"));
-		explosion2 = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion/explosion2.wav"));
-		explosion3 = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion/explosion3.wav"));
-		explosion4 = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion/explosion4.wav"));
-		explosion5 = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion/explosion5.wav"));
-		explosion6 = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion/explosion6.wav"));
-		powerup1 = Gdx.audio.newSound(Gdx.files.internal("sounds/powerups/powerup1.wav"));
-		powerup2 = Gdx.audio.newSound(Gdx.files.internal("sounds/powerups/powerup2.wav"));
-		powerup3 = Gdx.audio.newSound(Gdx.files.internal("sounds/powerups/powerup3.wav"));
-		powerup4 = Gdx.audio.newSound(Gdx.files.internal("sounds/powerups/powerup4.wav"));
-		powerup5 = Gdx.audio.newSound(Gdx.files.internal("sounds/powerups/powerup5.wav"));
-		powerup6 = Gdx.audio.newSound(Gdx.files.internal("sounds/powerups/powerup6.wav"));
-		powerup7 = Gdx.audio.newSound(Gdx.files.internal("sounds/powerups/powerup7.wav"));
-		heal1 = Gdx.audio.newSound(Gdx.files.internal("sounds/powerups/heal1.wav"));
-		bullet4 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet/bullet4.wav"));
-		bullet5 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet/bullet5.wav"));
-		bullet6 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet/bullet6.wav"));
-		bullet7 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet/bullet7.wav"));
-		bullet8 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet/bullet8.wav"));
-		bullet9 = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet/bullet9.wav"));
+		select1 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/buttons/select1.wav"));
+		select2 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/buttons/select2.wav"));
+		fire1 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/missile/fire1.wav"));
+		fire2 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/missile/fire2.wav"));
+		fire3 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/missile/fire3.wav"));
+		fire4 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/missile/fire4.wav"));
+		fire5 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/missile/fire5.wav"));
+		fire6 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/missile/fire6.wav"));
+		explosion1 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/explosion/explosion1.wav"));
+		explosion2 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/explosion/explosion2.wav"));
+		explosion3 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/explosion/explosion3.wav"));
+		explosion4 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/explosion/explosion4.wav"));
+		explosion5 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/explosion/explosion5.wav"));
+		explosion6 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/explosion/explosion6.wav"));
+		powerup1 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/powerups/powerup1.wav"));
+		powerup2 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/powerups/powerup2.wav"));
+		powerup3 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/powerups/powerup3.wav"));
+		powerup4 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/powerups/powerup4.wav"));
+		powerup5 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/powerups/powerup5.wav"));
+		powerup6 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/powerups/powerup6.wav"));
+		powerup7 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/powerups/powerup7.wav"));
+		heal1 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/powerups/heal1.wav"));
+		bullet4 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/bullet/bullet4.wav"));
+		bullet5 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/bullet/bullet5.wav"));
+		bullet6 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/bullet/bullet6.wav"));
+		bullet7 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/bullet/bullet7.wav"));
+		bullet8 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/bullet/bullet8.wav"));
+		bullet9 = Gdx.audio.newSound(Gdx.files
+				.internal("sounds/bullet/bullet9.wav"));
 
 		//
 		// Background
 		//
-		texture_back = new Texture(Gdx.files.internal("images/interface/background_android.png"));
+		texture_back = new Texture(
+				Gdx.files.internal("images/interface/background_android.png"));
 		texture_back.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		sprite_back = new Sprite(texture_back);
 		sprite_back.flip(false, true);
-		
-		texture_control_button_back = new Texture(Gdx.files.internal("images/interface/background_android_control_button.png"));
-		texture_control_button_back.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+
+		texture_control_button_back = new Texture(
+				Gdx.files
+						.internal("images/interface/background_android_control_button.png"));
+		texture_control_button_back.setFilter(TextureFilter.Linear,
+				TextureFilter.Linear);
 		sprite_control_button_back = new Sprite(texture_control_button_back);
 		sprite_control_button_back.flip(false, true);
 
@@ -517,12 +561,14 @@ public class Assets {
 		sprite_animback3 = new Sprite(texture_animback3);
 		sprite_animback3.flip(false, true);
 
-		texture_auto_aim = new Texture(Gdx.files.internal("images/player/auto_aim.png"));
+		texture_auto_aim = new Texture(
+				Gdx.files.internal("images/player/auto_aim.png"));
 		texture_auto_aim.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		sprite_auto_aim = new Sprite(texture_auto_aim);
 
 		// Loading animation
-		sheet = new Texture(Gdx.files.internal("animations/explosions/explosion.png"));
+		sheet = new Texture(
+				Gdx.files.internal("animations/explosions/explosion.png"));
 		TextureRegion[][] temp = TextureRegion.split(sheet, 100, 100);
 		sheet_frames = new TextureRegion[20];
 
@@ -540,7 +586,8 @@ public class Assets {
 		explosion_animation = new Animation(0.05F, sheet_frames);
 
 		// Loading animation
-		sheet = new Texture(Gdx.files.internal("animations/explosions/bigEXP_squished.png"));
+		sheet = new Texture(
+				Gdx.files.internal("animations/explosions/bigEXP_squished.png"));
 		TextureRegion[][] temp2 = TextureRegion.split(sheet, 600, 600);
 		sheet_frames = new TextureRegion[5];
 
@@ -558,7 +605,8 @@ public class Assets {
 		big_explosion_animation = new Animation(0.15F, sheet_frames);
 
 		// Loading animation
-		sheet = new Texture(Gdx.files.internal("animations/powerups/shield_sheet.png"));
+		sheet = new Texture(
+				Gdx.files.internal("animations/powerups/shield_sheet.png"));
 		TextureRegion[][] temp3 = TextureRegion.split(sheet, 200, 200);
 		sheet_frames = new TextureRegion[10];
 
@@ -575,7 +623,26 @@ public class Assets {
 
 		static_animation = new Animation(0.05F, sheet_frames);
 
-		health_sheet = new Texture(Gdx.files.internal("images/interface/health_sheet_small.png"));
+		// Loading animation
+		sheet = new Texture(Gdx.files.internal("animations/player/flame_animation.png"));
+		TextureRegion[][] temp4 = TextureRegion.split(sheet, 160, 160);
+		sheet_frames = new TextureRegion[3];
+
+		index = 0;
+		for (int i = 0; i < 1; i++) {
+			for (int j = 0; j < 3; j++) {
+				sheet_frames[index++] = temp4[i][j];
+			}
+		}
+
+		for (int i = 0; i < 3; i++) {
+			sheet_frames[i].flip(false, true);
+		}
+
+		flame_animation = new Animation(0.05F, sheet_frames);
+
+		health_sheet = new Texture(
+				Gdx.files.internal("images/interface/health_sheet_small.png"));
 
 		health_5 = new Sprite(health_sheet, 0, 0, 210, 75);
 		health_4 = new Sprite(health_sheet, 0, 75, 210, 75);
@@ -592,7 +659,8 @@ public class Assets {
 		extrahealth_2 = new Sprite(extrahealth_sheet, 54, 0, 18, 90);
 		extrahealth_1 = new Sprite(extrahealth_sheet, 72, 0, 18, 90);
 
-		power_sheet = new Texture(Gdx.files.internal("images/interface/powerup_text.png"));
+		power_sheet = new Texture(
+				Gdx.files.internal("images/interface/powerup_text.png"));
 
 		power_rapid = new Sprite(power_sheet, 0, 0, 160, 35);
 		power_rapid.flip(false, true);
